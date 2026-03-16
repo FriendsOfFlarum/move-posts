@@ -1,6 +1,6 @@
 # Move Posts
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg) [![Latest Stable Version](https://img.shields.io/packagist/v/sycho/flarum-move-posts.svg)](https://packagist.org/packages/sycho/flarum-move-posts) [![Total Downloads](https://img.shields.io/packagist/dt/sycho/flarum-move-posts.svg)](https://packagist.org/packages/sycho/flarum-move-posts)
+![License](https://img.shields.io/badge/license-MIT-blue.svg) [![Latest Stable Version](https://img.shields.io/packagist/v/fof/move-posts.svg)](https://packagist.org/packages/fof/move-posts) [![Total Downloads](https://img.shields.io/packagist/dt/fof/move-posts.svg)](https://packagist.org/packages/fof/move-posts)
 
 A [Flarum](http://flarum.org) extension. Move posts from one discussion to another.
 
@@ -34,25 +34,18 @@ Moved posts are replaced by event posts.
 Install with composer:
 
 ```sh
-composer require sycho/flarum-move-posts:"*"
+composer require fof/move-posts:"*"
 ```
 
 ## Updating
 
 ```sh
-composer update sycho/flarum-move-posts:"*" --with-dependencies
+composer update fof/move-posts:"*" --with-dependencies
 php flarum migrate
 php flarum cache:clear
 ```
 
-## Support
-This extension is under minimal maintenance.
-
-It was developed for a client and released as open-source for the benefit of the community.
-I might publish simple bugfixes or compatibility updates for free.
-
 ## Links
 
-- [Packagist](https://packagist.org/packages/sycho/flarum-move-posts)
-- [GitHub](https://github.com/sycho/flarum-move-posts)
-- [Discuss](https://discuss.flarum.org/d/28824-move-posts)
+- [Packagist](https://packagist.org/packages/fof/move-posts)
+- [GitHub](https://github.com/fof/move-posts)

@@ -16,7 +16,7 @@ import MovePostsModal from './components/MovePostsModal';
 import PostMovedPost from './components/PostMovedPost';
 import PostMovedNotification from './components/PostMovedNotification';
 
-app.initializers.add('sycho/flarum-move-posts', () => {
+app.initializers.add('fof/move-posts', () => {
   // @ts-ignore
   Discussion.prototype.isFirstMoved = Model.attribute('isFirstMoved');
 
