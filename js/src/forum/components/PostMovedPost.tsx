@@ -7,7 +7,7 @@ export default class PostMovedPost extends EventPost {
   }
 
   descriptionKey() {
-    return 'sycho-move-posts.forum.post_stream.post_moved';
+    return 'fof-move-posts.forum.post_stream.post_moved';
   }
 
   descriptionData() {

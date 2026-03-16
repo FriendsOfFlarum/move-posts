@@ -1,4 +1,4 @@
-sycho-move-posts:
+move-posts:
   admin:
     settings:
       moved_first_post_content: Moved Discussion (First Post) Content
@@ -8,17 +8,17 @@ sycho-move-posts:
       group_sequential_posts: Group sequential post moved event posts into one.
 
     permissions:
-      move_posts: => sycho-move-posts.ref.move_posts
+      move_posts: => fof-move-posts.ref.move_posts
 
   forum:
     badge:
       first_moved_tooltip: Moved
 
     discussion:
-      move_posts: => sycho-move-posts.ref.move_posts
+      move_posts: => fof-move-posts.ref.move_posts
 
     error:
-      move_old_post_to_newer_discussion: => sycho-move-posts.ref.status.old_to_new_move
+      move_old_post_to_newer_discussion: => fof-move-posts.ref.status.old_to_new_move
 
     modal:
       check: Check Operation Type
@@ -29,10 +29,10 @@ sycho-move-posts:
       selected_posts: "{count, plural, one {One Post Selected} other {{count} Posts Selected}}"
       status:
         complex_move: Will be a complex move, posts will be pushed between posts, leading to old URL references of the target discussion's posts to change as well.
-        old_to_new_move: => sycho-move-posts.ref.status.old_to_new_move
+        old_to_new_move: => fof-move-posts.ref.status.old_to_new_move
         simple_move: Will be a simple move, posts will all be added at the end of the discussion.
       submit: Proceed
-      title: => sycho-move-posts.ref.move_posts
+      title: => fof-move-posts.ref.move_posts
 
     notifications:
       post_moved_text: One or more of your posts were moved to {targetDiscussionTitle}.

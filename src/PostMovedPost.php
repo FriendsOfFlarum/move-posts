@@ -24,7 +24,7 @@ class PostMovedPost extends AbstractEventPost implements MergeableInterface
 
     public function saveAfter(Post $previous = null)
     {
-        $groupSequentialPosts = resolve(SettingsRepositoryInterface::class)->get('sycho-move-posts.group_sequential_event_posts');
+        $groupSequentialPosts = resolve(SettingsRepositoryInterface::class)->get('fof-move-posts.group_sequential_event_posts');
 
         // If the previous post is another 'post moved' post, and it's
         // by the same user, and sequential posts is on, then we can merge this post into it.
