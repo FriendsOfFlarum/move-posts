@@ -1,22 +1,22 @@
 import app from 'flarum/forum/app';
 import Button from 'flarum/common/components/Button';
-import Modal from 'flarum/common/components/Modal';
+import Modal, { IInternalModalAttrs } from 'flarum/common/components/Modal';
 import Switch from 'flarum/common/components/Switch';
+// @ts-ignore
 import DiscussionSearch from 'flarum/uikit/forum/DiscussionSearch';
-import { ComponentAttrs } from 'flarum/common/Component';
 import type Discussion from 'flarum/common/models/Discussion';
 import GlobalSearchState from 'flarum/forum/states/GlobalSearchState';
 
-export interface MovePostsModalAttrs extends ComponentAttrs {
+export interface MovePostsModalAttrs extends IInternalModalAttrs {
   discussion: Discussion;
-  postIds: number[];
+  postIds: string[];
 }
 
-export default class MovePostsModal<T extends MovePostsModalAttrs> extends Modal<T> {
+export default class MovePostsModa extends Modal<MovePostsModalAttrs> {
   isLoading: string | boolean = false;
   newDiscussion: boolean = false;
   newDiscussionTitle: string = '';
-  targetDiscussionId: number | null = null;
+  targetDiscussionId?: string;
   search = new GlobalSearchState();
 
   className() {
@@ -49,13 +49,6 @@ export default class MovePostsModal<T extends MovePostsModalAttrs> extends Modal
           ) : (
             <div className="Form-group">
               <label for="destination">{app.translator.trans('fof-move-posts.forum.modal.destination')}</label>
-              {/*<input
-                id="destination"
-                className="FormControl"
-                type="number"
-                required={true}
-                onchange={(e: any) => (this.targetDiscussionId = e.target!.value)}
-              />*/}
               <DiscussionSearch
                 state={this.search}
                 ignore={this.attrs.discussion.id()}
