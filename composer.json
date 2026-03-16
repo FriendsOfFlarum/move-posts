@@ -1,5 +1,5 @@
 {
-    "name": "sycho/flarum-move-posts",
+    "name": "fof/move-posts",
     "description": "Move posts from one discussion to another",
     "keywords": [
         "flarum"
@@ -8,14 +8,14 @@
     "license": "MIT",
     "funding": [
         {
-            "type": "other",
-            "url": "https://www.buymeacoffee.com/sycho"
+            "type": "website",
+            "url": "https://opencollective.com/fof/donate"
         }
     ],
-    "homepage": "https://sycho9.github.io",
+    "homepage": "https://friendsofflarum.org",
     "support": {
-        "issues": "https://github.com/SychO9/flarum-move-posts/issues",
-        "source": "https://github.com/SychO9/flarum-move-posts"
+        "issues": "https://github.com/FriendsOfFlarum/move-posts/issues",
+        "source": "https://github.com/FriendsOfFlarum/move-posts"
     },
     "require": {
         "flarum/core": "^2.0.0",
@@ -28,11 +28,21 @@
         {
             "name": "Sami Mazouz",
             "role": "Developer"
+        },
+        {
+            "name": "Rafał Całka",
+            "homepage": "https://github.com/rafaucau",
+            "role": "Developer"
+        },
+        {
+            "name": "FoF Team",
+            "email": "team@friendsofflarum.org",
+            "role": "Maintainer"
         }
     ],
     "autoload": {
         "psr-4": {
-            "SychO\\MovePosts\\": "src/"
+            "FoF\\MovePosts\\": "src/"
         }
     },
     "autoload-dev": {
@@ -42,14 +52,14 @@
     },
     "extra": {
         "flarum-extension": {
-            "title": "FoF Move Posts",
-            "category": "",
+            "title": "Move Posts",
+            "category": "feature",
             "optional-dependencies": [
                 "flarum/tags"
             ],
             "icon": {
                 "name": "fas fa-exchange-alt",
-                "backgroundColor": "#117187",
+                "backgroundColor": "#e74c3c",
                 "color": "#fff"
             }
         },

@@ -1,6 +1,6 @@
 <?php
 
-namespace SychO\MovePosts;
+namespace FoF\MovePosts;
 
 use Flarum\Discussion\Discussion;
 use Flarum\Http\UrlGenerator;

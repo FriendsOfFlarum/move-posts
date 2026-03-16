@@ -1,15 +1,15 @@
 <?php
 
 /*
- * This file is part of sycho/flarum-move-posts.
+ * This file is part of fof/move-posts.
  *
- * Copyright (c) 2021 Sami Mazouz.
+ * Copyright (c) FriendsOfFlarum.
  *
  * For the full copyright and license information, please view the LICENSE.md
  * file that was distributed with this source code.
  */
 
-namespace SychO\MovePosts\Command;
+namespace FoF\MovePosts\Command;
 
 use Flarum\Discussion\Discussion;
 use Flarum\Discussion\DiscussionRepository;
@@ -26,12 +26,12 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use SychO\MovePosts\Event\PostsMoved;
-use SychO\MovePosts\Exception\MoveOldPostToNewerDiscussionException;
-use SychO\MovePosts\Exception\MovePostsFromDifferentDiscussionsException;
-use SychO\MovePosts\MovedDiscussionFirstPostFactory;
-use SychO\MovePosts\MovePostsValidator;
-use SychO\MovePosts\PostMovedPost;
+use FoF\MovePosts\Event\PostsMoved;
+use FoF\MovePosts\Exception\MoveOldPostToNewerDiscussionException;
+use FoF\MovePosts\Exception\MovePostsFromDifferentDiscussionsException;
+use FoF\MovePosts\MovedDiscussionFirstPostFactory;
+use FoF\MovePosts\MovePostsValidator;
+use FoF\MovePosts\PostMovedPost;
 
 class MovePostsHandler
 {
