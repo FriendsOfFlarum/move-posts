@@ -17,6 +17,9 @@
         "issues": "https://github.com/FriendsOfFlarum/move-posts/issues",
         "source": "https://github.com/FriendsOfFlarum/move-posts"
     },
+    "replace": {
+        "sycho/flarum-move-posts": "*"
+    },
     "require": {
         "flarum/core": "^1.8.0",
         "sycho/flarum-uikit": "^0.2.0"
