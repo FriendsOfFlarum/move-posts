@@ -1,6 +1,6 @@
 <?php
 
-namespace SychO\MovePosts\Event;
+namespace FoF\MovePosts\Event;
 
 use Flarum\Discussion\Discussion;
 use Flarum\Post\CommentPost;

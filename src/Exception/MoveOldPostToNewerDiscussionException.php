@@ -1,15 +1,15 @@
 <?php
 
 /*
- * This file is part of sycho/flarum-move-posts.
+ * This file is part of fof/move-posts.
  *
- * Copyright (c) 2021 Sami Mazouz.
+ * Copyright (c) FriendsOfFlarum.
  *
  * For the full copyright and license information, please view the LICENSE.md
  * file that was distributed with this source code.
  */
 
-namespace SychO\MovePosts\Exception;
+namespace FoF\MovePosts\Exception;
 
 use Exception;
 use Flarum\Foundation\KnownError;

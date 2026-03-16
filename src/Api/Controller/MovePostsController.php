@@ -1,15 +1,15 @@
 <?php
 
 /*
- * This file is part of sycho/flarum-move-posts.
+ * This file is part of fof/move-posts.
  *
- * Copyright (c) 2021 Sami Mazouz.
+ * Copyright (c) FriendsOfFlarum.
  *
  * For the full copyright and license information, please view the LICENSE.md
  * file that was distributed with this source code.
  */
 
-namespace SychO\MovePosts\Api\Controller;
+namespace FoF\MovePosts\Api\Controller;
 
 use Flarum\Http\RequestUtil;
 use Illuminate\Contracts\Bus\Dispatcher;
@@ -18,7 +18,7 @@ use Laminas\Diactoros\Response\EmptyResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use SychO\MovePosts\Command\MovePosts;
+use FoF\MovePosts\Command\MovePosts;
 
 class MovePostsController implements RequestHandlerInterface
 {
