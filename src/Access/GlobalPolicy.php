@@ -18,6 +18,6 @@ class GlobalPolicy extends AbstractPolicy
 {
     public function movePosts(User $actor)
     {
-        return $actor->hasPermission('sycho-move-posts:movePosts');
+        return $actor->hasPermission('fof-move-posts:movePosts');
     }
 }

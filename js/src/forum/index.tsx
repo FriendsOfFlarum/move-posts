@@ -1,4 +1,4 @@
-import { extend, override } from 'flarum/common/extend';
+import { extend } from 'flarum/common/extend';
 import app from 'flarum/forum/app';
 import Button from 'flarum/common/components/Button';
 import Badge from 'flarum/common/components/Badge';
@@ -8,7 +8,6 @@ import DiscussionPage from 'flarum/forum/components/DiscussionPage';
 import PostControls from 'flarum/forum/utils/PostControls';
 import icon from 'flarum/common/helpers/icon';
 import Discussion from 'flarum/common/models/Discussion';
-import ItemList from 'flarum/common/utils/ItemList';
 import Model from 'flarum/common/Model';
 
 import DiscussionPageState from './states/DiscussionPageState';
@@ -20,7 +19,7 @@ app.initializers.add('fof/move-posts', () => {
   // @ts-ignore
   Discussion.prototype.isFirstMoved = Model.attribute('isFirstMoved');
 
-  extend(Discussion.prototype, 'badges', function (badges: ItemList) {
+  extend(Discussion.prototype, 'badges', function (badges) {
     if (this.isFirstMoved()) {
       badges.add(
         'firstMoved',

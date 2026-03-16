@@ -1,4 +1,4 @@
-move-posts:
+fof-move-posts:
   admin:
     settings:
       moved_first_post_content: Moved Discussion (First Post) Content

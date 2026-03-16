@@ -1,3 +1,4 @@
+import app from 'flarum/admin/app';
 import extractText from 'flarum/common/utils/extractText';
 
 app.initializers.add('fof/move-posts', () => {
@@ -6,7 +7,7 @@ app.initializers.add('fof/move-posts', () => {
     extractText(app.translator.trans('fof-move-posts.lib.discussion.first_post.default_content'));
 
   app.extensionData
-    .for('sycho-move-posts')
+    .for('fof-move-posts')
     .registerSetting(function () {
       return (
         <div className="Form-group">
@@ -35,7 +36,7 @@ app.initializers.add('fof/move-posts', () => {
       {
         icon: 'fas fa-exchange-alt',
         label: app.translator.trans('fof-move-posts.admin.permissions.move_posts'),
-        permission: 'sycho-move-posts:movePosts',
+        permission: 'fof-move-posts:movePosts',
       },
       'moderate'
     );
