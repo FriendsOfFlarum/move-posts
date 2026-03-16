@@ -9,11 +9,22 @@
  * file that was distributed with this source code.
  */
 
-use Flarum\Database\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Schema\Builder;
 
-return Migration::addColumns('discussions', [
-    // `is_moved` is too general and might be used by another extension,
-    // so we use `is_first_moved` which isn't ideal, but isn't wrong either,
-    // as it's the first posted that gets moved.
-    'is_first_moved' => ['boolean', 'default' => 0],
-]);
+return [
+    'up' => function (Builder $schema) {
+        if (!$schema->hasColumn('discussions', 'is_first_moved')) {
+            $schema->table('discussions', function (Blueprint $table) {
+                $table->boolean('is_first_moved')->default(0);
+            });
+        }
+    },
+    'down' => function (Builder $schema) {
+        if ($schema->hasColumn('discussions', 'is_first_moved')) {
+            $schema->table('discussions', function (Blueprint $table) {
+                $table->dropColumn('is_first_moved');
+            });
+        }
+    }
+];
