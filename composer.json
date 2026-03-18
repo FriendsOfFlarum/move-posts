@@ -21,9 +21,6 @@
     "replace": {
         "sycho/flarum-move-posts": "*"
     },
-    "replace": {
-        "sycho/flarum-move-posts": "*"
-    },
     "require": {
         "php": "^8.2",
         "flarum/core": "^2.0.0",
