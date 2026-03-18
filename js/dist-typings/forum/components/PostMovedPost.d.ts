@@ -1,4 +1,3 @@
-/// <reference types="mithril" />
 import EventPost from 'flarum/forum/components/EventPost';
 export default class PostMovedPost extends EventPost {
     icon(): string;

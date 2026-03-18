@@ -1,4 +1,3 @@
-/// <reference types="mithril" />
 import FormModal from 'flarum/common/components/FormModal';
 import { ComponentAttrs } from 'flarum/common/Component';
 import type Discussion from 'flarum/common/models/Discussion';
