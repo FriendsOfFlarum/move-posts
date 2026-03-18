@@ -5,7 +5,7 @@ export interface MovePostsModalAttrs extends IInternalModalAttrs {
     discussion: Discussion;
     postIds: string[];
 }
-export default class MovePostsModa extends Modal<MovePostsModalAttrs> {
+export default class MovePostsModal extends Modal<MovePostsModalAttrs> {
     isLoading: string | boolean;
     newDiscussion: boolean;
     newDiscussionTitle: string;
