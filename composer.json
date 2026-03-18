@@ -25,7 +25,9 @@
         "sycho/flarum-uikit": "^0.2.0"
     },
     "require-dev": {
-        "flarum/testing": "^1.0.0"
+        "flarum/testing": "^1.0.0",
+        "flarum/lock": "^1.8",
+        "flarum/tags": "^1.8"
     },
     "authors": [
         {
@@ -59,7 +61,8 @@
             "title": "Move Posts",
             "category": "feature",
             "optional-dependencies": [
-                "flarum/tags"
+                "flarum/tags",
+                "flarum/lock"
             ],
             "icon": {
                 "name": "fas fa-exchange-alt",
