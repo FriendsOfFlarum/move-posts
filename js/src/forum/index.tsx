@@ -25,7 +25,7 @@ app.initializers.add('fof/move-posts', () => {
 
   app.notificationComponents.postMoved = PostMovedNotification;
 
-  // @ts-ignore - app.forum.attribute('canMovePosts') is not available at his point
+  // @ts-ignore - app.forum.attribute('canMovePosts') is not available at this point
   if (!app.data.resources[0].attributes.canMovePosts) {
     return;
   }
