@@ -59,7 +59,7 @@
     },
     "extra": {
         "flarum-extension": {
-            "title": "Move Posts",
+            "title": "FoF Move Posts",
             "category": "feature",
             "optional-dependencies": [
                 "flarum/tags",
