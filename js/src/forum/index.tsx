@@ -81,7 +81,7 @@ app.initializers.add('fof/move-posts', () => {
   });
 
   extend(PostControls, 'moderationControls', function (items, post) {
-    if (post.contentType() !== 'comment') return;
+    if (post.contentType() !== 'comment' || app.current.get('routeName') !== 'discussion') return;
 
     const postId = post.id();
     if (!postId) return;
