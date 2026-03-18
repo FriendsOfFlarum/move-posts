@@ -218,7 +218,7 @@ class MovePostsHandler
      */
     protected function createTargetDiscussion(Discussion $sourceDiscussion, CommentPost $firstPost, string $title, bool $emulate): Discussion
     {
-        $discussion = Discussion::start($title, $firstPost->user);
+        $discussion = Discussion::start($title, $firstPost->user ?: new User());
 
         // Set the same tags as the old discussion
         if ($sourceDiscussion->tags && $sourceDiscussion->tags->isNotEmpty()) {
