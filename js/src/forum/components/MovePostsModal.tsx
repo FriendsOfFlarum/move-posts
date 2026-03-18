@@ -12,7 +12,7 @@ export interface MovePostsModalAttrs extends IInternalModalAttrs {
   postIds: string[];
 }
 
-export default class MovePostsModa extends Modal<MovePostsModalAttrs> {
+export default class MovePostsModal extends Modal<MovePostsModalAttrs> {
   isLoading: string | boolean = false;
   newDiscussion: boolean = false;
   newDiscussionTitle: string = '';
@@ -135,13 +135,13 @@ export default class MovePostsModa extends Modal<MovePostsModalAttrs> {
           const error = e.response.errors[0];
           this.isLoading = false;
 
-          if (error.code !== 'move_old_post_to_newer_discussion') {
+          if (!['move_old_post_to_newer_discussion', 'move_posts_to_same_discussion'].includes(error.code)) {
             throw e;
           }
 
           this.alertAttrs = {
             type: 'error',
-            content: app.translator.trans('fof-move-posts.forum.error.move_old_post_to_newer_discussion'),
+            content: app.translator.trans(`fof-move-posts.forum.error.${error.code}`),
           };
 
           m.redraw();

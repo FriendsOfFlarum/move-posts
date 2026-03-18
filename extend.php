@@ -53,7 +53,8 @@ return [
 
     (new Extend\ErrorHandling())
         ->status('move_old_post_to_newer_discussion', 409)
-        ->status('move_posts_from_different_discussions', 409),
+        ->status('move_posts_from_different_discussions', 409)
+        ->status('move_posts_to_same_discussion', 409),
 
     (new Extend\Post)
         ->type(PostMovedPost::class),

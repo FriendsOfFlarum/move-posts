@@ -26,6 +26,7 @@ use Illuminate\Support\Collection;
 use FoF\MovePosts\Event\PostsMoved;
 use FoF\MovePosts\Exception\MoveOldPostToNewerDiscussionException;
 use FoF\MovePosts\Exception\MovePostsFromDifferentDiscussionsException;
+use FoF\MovePosts\Exception\MovePostsToSameDiscussionException;
 use FoF\MovePosts\MovedDiscussionFirstPostFactory;
 use FoF\MovePosts\MovePostsValidator;
 use FoF\MovePosts\PostMovedPost;
@@ -140,6 +141,10 @@ class MovePostsHandler
         $targetDiscussion = $newDiscussion
             ? $this->createTargetDiscussion($sourceDiscussion, $posts->first(), Arr::get($data, 'newDiscussionTitle'), $emulate)
             : $this->discussions->findOrFail(Arr::get($data, 'targetDiscussionId'));
+
+        if ($sourceDiscussion->id === $targetDiscussion->id){
+            throw new MovePostsToSameDiscussionException();
+        }
 
         if (! $newDiscussion && $posts->first()->created_at < $targetDiscussion->firstPost->created_at) {
             if ($emulate) {
