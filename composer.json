@@ -22,7 +22,7 @@
     },
     "require": {
         "flarum/core": "^1.8.0",
-        "sycho/flarum-uikit": "^0.2.0"
+        "fof/ui-kit": "^1.0.0"
     },
     "require-dev": {
         "flarum/testing": "^1.0.0",

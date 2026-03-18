@@ -6,12 +6,10 @@ import Post from 'flarum/forum/components/Post';
 import CommentPost from 'flarum/forum/components/CommentPost';
 import DiscussionPage from 'flarum/forum/components/DiscussionPage';
 import PostControls from 'flarum/forum/utils/PostControls';
-import icon from 'flarum/common/helpers/icon';
 import Discussion from 'flarum/common/models/Discussion';
 
 import MovePostsModal from './components/MovePostsModal';
 import PostMovedNotification from './components/PostMovedNotification';
-import Checkbox from 'flarum/common/components/Checkbox';
 export { default as extend } from './extend';
 
 app.initializers.add('fof/move-posts', () => {

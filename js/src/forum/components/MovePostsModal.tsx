@@ -2,8 +2,7 @@ import app from 'flarum/forum/app';
 import Button from 'flarum/common/components/Button';
 import Modal, { IInternalModalAttrs } from 'flarum/common/components/Modal';
 import Switch from 'flarum/common/components/Switch';
-// @ts-ignore
-import DiscussionSearch from 'flarum/uikit/forum/DiscussionSearch';
+import DiscussionSearch from 'flarum/ui-kit/forum/DiscussionSearch';
 import type Discussion from 'flarum/common/models/Discussion';
 import GlobalSearchState from 'flarum/forum/states/GlobalSearchState';
 
