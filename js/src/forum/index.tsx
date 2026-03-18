@@ -11,6 +11,7 @@ import Discussion from 'flarum/common/models/Discussion';
 
 import MovePostsModal from './components/MovePostsModal';
 import PostMovedNotification from './components/PostMovedNotification';
+import Checkbox from 'flarum/common/components/Checkbox';
 export { default as extend } from './extend';
 
 app.initializers.add('fof/move-posts', () => {
@@ -26,7 +27,7 @@ app.initializers.add('fof/move-posts', () => {
 
   app.notificationComponents.postMoved = PostMovedNotification;
 
-  // @ts-ignore - app.forum.attribute('canMovePosts') is not available yet
+  // @ts-ignore - app.forum.attribute('canMovePosts') is not available at his point
   if (!app.data.resources[0].attributes.canMovePosts) {
     return;
   }
@@ -35,6 +36,7 @@ app.initializers.add('fof/move-posts', () => {
 
   extend(CommentPost.prototype, 'oninit', function () {
     this.subtree.check(() => selectedPosts.has(this.attrs.post.id() as string));
+    this.subtree.check(() => selectedPosts.size > 0);
   });
 
   extend(Post.prototype, 'classes', function (classes: string[]) {
@@ -45,12 +47,26 @@ app.initializers.add('fof/move-posts', () => {
 
   extend(CommentPost.prototype, 'headerItems', function (items) {
     const postId = this.attrs.post.id();
-    if (postId && selectedPosts.has(postId)) {
+
+    if (postId && selectedPosts.size > 0) {
+      const isSelected = selectedPosts.has(postId);
+
       items.add(
         'moving',
-        <span className="PostMoving">
-          {icon('fas fa-exchange-alt')} {app.translator.trans('fof-move-posts.forum.post.moving')}
-        </span>
+        <Button
+          className="Button Button--link PostMoving"
+          onclick={() => {
+            if (isSelected) {
+              selectedPosts.delete(postId);
+            } else {
+              selectedPosts.add(postId);
+            }
+            m.redraw();
+          }}
+          icon={isSelected ? 'fas fa-check-square' : 'far fa-square'}
+        >
+          {app.translator.trans(`fof-move-posts.forum.post.${isSelected ? 'moving' : 'move'}`)}
+        </Button>
       );
     }
   });
