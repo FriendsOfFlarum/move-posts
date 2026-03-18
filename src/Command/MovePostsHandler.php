@@ -332,7 +332,7 @@ class MovePostsHandler
         $grouped = [];
         $index = 0;
 
-        $groupSequentialPosts = $this->settings->get('sycho-move-posts.group_sequential_event_posts');
+        $groupSequentialPosts = $this->settings->get('fof-move-posts.group_sequential_event_posts');
 
         if ($groupSequentialPosts) {
             foreach($posts as $post) {

@@ -28,10 +28,10 @@ class MovedDiscussionFirstPostFactory
         $newFirstPost->type = CommentPost::$type;
         $newFirstPost->ip_address = '';
 
-        $content = trim($this->settings->get('sycho-move-posts.moved_first_post_content'));
+        $content = trim($this->settings->get('fof-move-posts.moved_first_post_content'));
 
         if (empty($content)) {
-            $content = $this->translator->trans('sycho-move-posts.lib.discussion.first_post.default_content');
+            $content = $this->translator->trans('fof-move-posts.lib.discussion.first_post.default_content');
         }
 
         $newFirstPost->content = str_replace(

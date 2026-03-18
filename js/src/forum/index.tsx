@@ -24,7 +24,7 @@ app.initializers.add('sycho/flarum-move-posts', () => {
     if (this.isFirstMoved()) {
       badges.add(
         'firstMoved',
-        <Badge type="firstPostMoved" label={app.translator.trans('sycho-move-posts.forum.badge.first_moved_tooltip')} icon="fas fa-exchange-alt" />,
+        <Badge type="firstPostMoved" label={app.translator.trans('fof-move-posts.forum.badge.first_moved_tooltip')} icon="fas fa-exchange-alt" />,
         -20
       );
     }
@@ -57,7 +57,7 @@ app.initializers.add('sycho/flarum-move-posts', () => {
       items.add(
         'moving',
         <span className="PostMoving">
-          <Icon name="fas fa-exchange-alt" /> {app.translator.trans('sycho-move-posts.forum.post.moving')}
+          <Icon name="fas fa-exchange-alt" /> {app.translator.trans('fof-move-posts.forum.post.moving')}
         </span>
       );
     }
@@ -81,7 +81,7 @@ app.initializers.add('sycho/flarum-move-posts', () => {
             })
           }
         >
-          {app.translator.trans('sycho-move-posts.forum.discussion.move_posts')}
+          {app.translator.trans('fof-move-posts.forum.discussion.move_posts')}
           <span className="Bubble MovePosts-Button-count">{state.selectedPostsToMove().length}</span>
         </Button>
       );
@@ -107,7 +107,7 @@ app.initializers.add('sycho/flarum-move-posts', () => {
           m.redraw();
         }}
       >
-        {app.translator.trans(`sycho-move-posts.forum.post.${operation}`)}
+        {app.translator.trans(`fof-move-posts.forum.post.${operation}`)}
       </Button>
     );
   });

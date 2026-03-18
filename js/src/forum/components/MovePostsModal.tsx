@@ -24,7 +24,7 @@ export default class MovePostsModal<T extends MovePostsModalAttrs> extends FormM
   }
 
   title() {
-    return app.translator.trans('sycho-move-posts.forum.modal.title');
+    return app.translator.trans('fof-move-posts.forum.modal.title');
   }
 
   content() {
@@ -32,23 +32,23 @@ export default class MovePostsModal<T extends MovePostsModalAttrs> extends FormM
       <div className="Modal-body">
         <form className="Form" onsubmit={this.onsubmit.bind(this)}>
           <div className="Form-group">
-            <label>{app.translator.trans('sycho-move-posts.forum.modal.selected_posts', { count: this.attrs.postIds.length })}</label>
+            <label>{app.translator.trans('fof-move-posts.forum.modal.selected_posts', { count: this.attrs.postIds.length })}</label>
             <input className="FormControl" readonly value={this.attrs.postIds.join(', ')} />
           </div>
           <div className="Form-group">
             <Switch state={this.newDiscussion} onchange={() => (this.newDiscussion = !this.newDiscussion)}>
-              {app.translator.trans('sycho-move-posts.forum.modal.new_discussion')}
+              {app.translator.trans('fof-move-posts.forum.modal.new_discussion')}
             </Switch>
           </div>
           {this.newDiscussion ? (
             <div className="Form-group">
-              <label for="discussion_name">{app.translator.trans('sycho-move-posts.forum.modal.discussion_name')}</label>
-              <p className="helptext">{app.translator.trans('sycho-move-posts.forum.modal.discussion_help')}</p>
+              <label for="discussion_name">{app.translator.trans('fof-move-posts.forum.modal.discussion_name')}</label>
+              <p className="helptext">{app.translator.trans('fof-move-posts.forum.modal.discussion_help')}</p>
               <input id="discussion_name" className="FormControl" required={true} oninput={(e: any) => (this.newDiscussionTitle = e.target.value)} />
             </div>
           ) : (
             <div className="Form-group">
-              <label for="destination">{app.translator.trans('sycho-move-posts.forum.modal.destination')}</label>
+              <label for="destination">{app.translator.trans('fof-move-posts.forum.modal.destination')}</label>
               <DiscussionSearch
                 state={this.search}
                 ignore={this.attrs.discussion.id()}
@@ -63,7 +63,7 @@ export default class MovePostsModal<T extends MovePostsModalAttrs> extends FormM
               loading={this.isLoading === 'submit'}
               disabled={this.isLoading === 'check' || (!this.targetDiscussionId && !this.newDiscussionTitle)}
             >
-              {app.translator.trans('sycho-move-posts.forum.modal.submit')}
+              {app.translator.trans('fof-move-posts.forum.modal.submit')}
             </Button>
             <Button
               className="Button"
@@ -71,7 +71,7 @@ export default class MovePostsModal<T extends MovePostsModalAttrs> extends FormM
               loading={this.isLoading === 'check'}
               disabled={this.isLoading === 'submit' || (!this.targetDiscussionId && !this.newDiscussionTitle)}
             >
-              {app.translator.trans('sycho-move-posts.forum.modal.check')}
+              {app.translator.trans('fof-move-posts.forum.modal.check')}
             </Button>
           </div>
         </form>
@@ -99,15 +99,15 @@ export default class MovePostsModal<T extends MovePostsModalAttrs> extends FormM
     this.onsubmit(null, true).then((response: any) => {
       switch (response.status) {
         case 'old_to_new_move':
-          this.alertAttrs = { type: 'error', content: app.translator.trans('sycho-move-posts.forum.modal.status.old_to_new_move') };
+          this.alertAttrs = { type: 'error', content: app.translator.trans('fof-move-posts.forum.modal.status.old_to_new_move') };
           break;
 
         case 'simple_move':
-          this.alertAttrs = { type: 'success', content: app.translator.trans('sycho-move-posts.forum.modal.status.simple_move') };
+          this.alertAttrs = { type: 'success', content: app.translator.trans('fof-move-posts.forum.modal.status.simple_move') };
           break;
 
         case 'complex_move':
-          this.alertAttrs = { type: 'warning', content: app.translator.trans('sycho-move-posts.forum.modal.status.complex_move') };
+          this.alertAttrs = { type: 'warning', content: app.translator.trans('fof-move-posts.forum.modal.status.complex_move') };
           break;
 
         default:
@@ -141,7 +141,7 @@ export default class MovePostsModal<T extends MovePostsModalAttrs> extends FormM
 
           this.alertAttrs = {
             type: 'error',
-            content: app.translator.trans('sycho-move-posts.forum.error.move_old_post_to_newer_discussion'),
+            content: app.translator.trans('fof-move-posts.forum.error.move_old_post_to_newer_discussion'),
           };
 
           m.redraw();
