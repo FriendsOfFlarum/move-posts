@@ -15,14 +15,21 @@
     "homepage": "https://friendsofflarum.org",
     "support": {
         "issues": "https://github.com/FriendsOfFlarum/move-posts/issues",
-        "source": "https://github.com/FriendsOfFlarum/move-posts"
+        "source": "https://github.com/FriendsOfFlarum/move-posts",
+        "forum": "https://discuss.flarum.org/d/38941-friendsofflarum-move-posts"
+    },
+    "replace": {
+        "sycho/flarum-move-posts": "*"
     },
     "require": {
+        "php": "^8.2",
         "flarum/core": "^2.0.0",
-        "sycho/flarum-uikit": "^0.3.0"
+        "sycho/flarum-uikit": "^0.3.0",
+        "flarum/lock": "*",
+        "flarum/tags": "*"
     },
     "require-dev": {
-        "flarum/testing": "^2.0.0-beta.1"
+        "flarum/testing": "^v2.0.0-beta.7"
     },
     "authors": [
         {
@@ -47,7 +54,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "SychO\\MovePosts\\Tests\\": "tests/"
+            "FoF\\MovePosts\\Tests\\": "tests/"
         }
     },
     "extra": {
@@ -55,7 +62,8 @@
             "title": "Move Posts",
             "category": "feature",
             "optional-dependencies": [
-                "flarum/tags"
+                "flarum/tags",
+                "flarum/lock"
             ],
             "icon": {
                 "name": "fas fa-exchange-alt",

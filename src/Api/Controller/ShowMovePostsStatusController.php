@@ -1,6 +1,6 @@
 <?php
 
-namespace SychO\MovePosts\Api\Controller;
+namespace FoF\MovePosts\Api\Controller;
 
 use Flarum\Http\RequestUtil;
 use Illuminate\Contracts\Bus\Dispatcher;
@@ -9,7 +9,7 @@ use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use SychO\MovePosts\Command\MovePosts;
+use FoF\MovePosts\Command\MovePosts;
 
 class ShowMovePostsStatusController implements RequestHandlerInterface
 {
