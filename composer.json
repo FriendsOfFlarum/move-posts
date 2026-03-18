@@ -15,7 +15,8 @@
     "homepage": "https://friendsofflarum.org",
     "support": {
         "issues": "https://github.com/FriendsOfFlarum/move-posts/issues",
-        "source": "https://github.com/FriendsOfFlarum/move-posts"
+        "source": "https://github.com/FriendsOfFlarum/move-posts",
+        "forum": "https://discuss.flarum.org/d/38941-friendsofflarum-move-posts"
     },
     "replace": {
         "sycho/flarum-move-posts": "*"

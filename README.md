@@ -49,3 +49,4 @@ php flarum cache:clear
 
 - [Packagist](https://packagist.org/packages/fof/move-posts)
 - [GitHub](https://github.com/FriendsOfFlarum/move-posts)
+- [Discuss](https://discuss.flarum.org/d/38941-friendsofflarum-move-posts)
