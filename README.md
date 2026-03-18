@@ -2,7 +2,7 @@
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg) [![Latest Stable Version](https://img.shields.io/packagist/v/fof/move-posts.svg)](https://packagist.org/packages/fof/move-posts) [![Total Downloads](https://img.shields.io/packagist/dt/fof/move-posts.svg)](https://packagist.org/packages/fof/move-posts)
 
-A [Flarum](http://flarum.org) extension. Move posts from one discussion to another.
+A [Flarum](https://flarum.org/) extension. Move posts from one discussion to another.
 
 > **WARNING**: *This extension can in certain scenarios result in breaking old URLs to posts of the discussion you're moving posts to.*
 
@@ -34,13 +34,13 @@ Moved posts are replaced by event posts.
 Install with composer:
 
 ```sh
-composer require fof/move-posts:"*"
+composer require fof/move-posts
 ```
 
 ## Updating
 
 ```sh
-composer update fof/move-posts:"*" --with-dependencies
+composer update fof/move-posts --with-dependencies
 php flarum migrate
 php flarum cache:clear
 ```
@@ -48,4 +48,4 @@ php flarum cache:clear
 ## Links
 
 - [Packagist](https://packagist.org/packages/fof/move-posts)
-- [GitHub](https://github.com/fof/move-posts)
+- [GitHub](https://github.com/FriendsOfFlarum/move-posts)
