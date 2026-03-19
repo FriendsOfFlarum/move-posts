@@ -1,16 +1,16 @@
 import FormModal from 'flarum/common/components/FormModal';
-import { ComponentAttrs } from 'flarum/common/Component';
 import type Discussion from 'flarum/common/models/Discussion';
 import GlobalSearchState from 'flarum/forum/states/GlobalSearchState';
-export interface MovePostsModalAttrs extends ComponentAttrs {
+import { IInternalModalAttrs } from 'flarum/common/components/Modal';
+export interface MovePostsModalAttrs extends IInternalModalAttrs {
     discussion: Discussion;
-    postIds: number[];
+    postIds: string[];
 }
-export default class MovePostsModal<T extends MovePostsModalAttrs> extends FormModal<T> {
+export default class MovePostsModal extends FormModal<MovePostsModalAttrs> {
     isLoading: string | boolean;
     newDiscussion: boolean;
     newDiscussionTitle: string;
-    targetDiscussionId: number | null;
+    targetDiscussionId?: string;
     search: GlobalSearchState;
     className(): string;
     title(): string | any[];
