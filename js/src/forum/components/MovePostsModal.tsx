@@ -3,20 +3,20 @@ import Button from 'flarum/common/components/Button';
 import FormModal from 'flarum/common/components/FormModal';
 import Switch from 'flarum/common/components/Switch';
 import DiscussionSearch from 'ext:fof/ui-kit/forum/components/DiscussionSearch';
-import { ComponentAttrs } from 'flarum/common/Component';
 import type Discussion from 'flarum/common/models/Discussion';
 import GlobalSearchState from 'flarum/forum/states/GlobalSearchState';
+import { IInternalModalAttrs } from 'flarum/common/components/Modal';
 
-export interface MovePostsModalAttrs extends ComponentAttrs {
+export interface MovePostsModalAttrs extends IInternalModalAttrs {
   discussion: Discussion;
-  postIds: number[];
+  postIds: string[];
 }
 
-export default class MovePostsModal<T extends MovePostsModalAttrs> extends FormModal<T> {
+export default class MovePostsModal extends FormModal<MovePostsModalAttrs> {
   isLoading: string | boolean = false;
   newDiscussion: boolean = false;
   newDiscussionTitle: string = '';
-  targetDiscussionId: number | null = null;
+  targetDiscussionId?: string;
   search = new GlobalSearchState();
 
   className() {
@@ -135,13 +135,13 @@ export default class MovePostsModal<T extends MovePostsModalAttrs> extends FormM
           const error = e.response.errors[0];
           this.isLoading = false;
 
-          if (error.code !== 'move_old_post_to_newer_discussion') {
+          if (!['move_old_post_to_newer_discussion', 'move_posts_to_same_discussion'].includes(error.code)) {
             throw e;
           }
 
           this.alertAttrs = {
             type: 'error',
-            content: app.translator.trans('fof-move-posts.forum.error.move_old_post_to_newer_discussion'),
+            content: app.translator.trans(`fof-move-posts.forum.error.${error.code}`),
           };
 
           m.redraw();

@@ -323,4 +323,23 @@ class MovePostsTest extends TestCase
         $this->assertEquals(5, $targetDiscussion->last_post_number);
         $this->assertEquals(1, $sourceDiscussion->last_post_number);
     }
+
+    #[Test]
+    public function cannot_move_posts_to_the_same_discussion()
+    {
+        $response = $this->send(
+            $this->request('POST', '/api/posts/move', [
+                'authenticatedAs' => 1,
+            ])->withParsedBody([
+                'data' => [
+                    'sourceDiscussionId' => 1,
+                    'targetDiscussionId' => 1,
+                    'postIds' => [2],
+                ],
+            ])
+        );
+
+        $this->assertEquals(409, $response->getStatusCode());
+        $this->assertEquals('move_posts_to_same_discussion', json_decode((string) $response->getBody(), true)['errors'][0]['code']);
+    }
 }

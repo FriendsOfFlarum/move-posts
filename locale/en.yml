@@ -19,6 +19,7 @@ fof-move-posts:
 
     error:
       move_old_post_to_newer_discussion: => fof-move-posts.ref.status.old_to_new_move
+      move_posts_to_same_discussion: You cannot move posts to the same discussion.
 
     modal:
       check: Check Operation Type
