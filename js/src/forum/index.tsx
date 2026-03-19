@@ -1,4 +1,4 @@
-import { extend, override } from 'flarum/common/extend';
+import { extend } from 'flarum/common/extend';
 import app from 'flarum/forum/app';
 import Button from 'flarum/common/components/Button';
 import Badge from 'flarum/common/components/Badge';
@@ -8,19 +8,12 @@ import DiscussionPage from 'flarum/forum/components/DiscussionPage';
 import PostControls from 'flarum/forum/utils/PostControls';
 import Icon from 'flarum/common/components/Icon';
 import Discussion from 'flarum/common/models/Discussion';
-import ItemList from 'flarum/common/utils/ItemList';
-import Model from 'flarum/common/Model';
 
-import DiscussionPageState from './states/DiscussionPageState';
 import MovePostsModal from './components/MovePostsModal';
-import PostMovedPost from './components/PostMovedPost';
-import PostMovedNotification from './components/PostMovedNotification';
+export { default as extend } from './extend';
 
 app.initializers.add('sycho/flarum-move-posts', () => {
-  // @ts-ignore
-  Discussion.prototype.isFirstMoved = Model.attribute('isFirstMoved');
-
-  extend(Discussion.prototype, 'badges', function (badges: ItemList) {
+  extend(Discussion.prototype, 'badges', function (badges) {
     if (this.isFirstMoved()) {
       badges.add(
         'firstMoved',
@@ -30,45 +23,56 @@ app.initializers.add('sycho/flarum-move-posts', () => {
     }
   });
 
-  // @ts-ignore
-  app.postComponents.postMoved = PostMovedPost;
-
-  // @ts-ignore
-  app.notificationComponents.postMoved = PostMovedNotification;
-
+  // @ts-ignore - app.forum.attribute('canMovePosts') is not available at this point
   if (!app.data.resources[0].attributes.canMovePosts) {
     return;
   }
 
-  const state = new DiscussionPageState();
+  const selectedPosts = new Set<string>();
 
   extend(CommentPost.prototype, 'oninit', function () {
-    this.subtree.check(() => state.selectedPostsToMove());
+    this.subtree.check(() => selectedPosts.has(this.attrs.post.id() as string));
+    this.subtree.check(() => selectedPosts.size > 0);
   });
 
   extend(Post.prototype, 'classes', function (classes: string[]) {
-    if (this.attrs.post.contentType() === 'comment' && state.has(this.attrs.post.id())) {
+    if (this.attrs.post.contentType() === 'comment' && selectedPosts.has(this.attrs.post.id())) {
       classes.push('Post--moving');
     }
   });
 
   extend(CommentPost.prototype, 'headerItems', function (items) {
-    if (state.has(this.attrs.post.id())) {
+    const postId = this.attrs.post.id();
+
+    if (postId && selectedPosts.size > 0) {
+      const isSelected = selectedPosts.has(postId);
+
       items.add(
         'moving',
-        <span className="PostMoving">
-          <Icon name="fas fa-exchange-alt" /> {app.translator.trans('fof-move-posts.forum.post.moving')}
-        </span>
+        <Button
+          className="Button Button--link PostMoving"
+          onclick={() => {
+            if (isSelected) {
+              selectedPosts.delete(postId);
+            } else {
+              selectedPosts.add(postId);
+            }
+            m.redraw();
+          }}
+          icon={isSelected ? 'fas fa-check-square' : 'far fa-square'}
+        >
+          {app.translator.trans(`fof-move-posts.forum.post.${isSelected ? 'moving' : 'move'}`)}
+        </Button>
       );
     }
   });
 
   extend(DiscussionPage.prototype, 'oncreate', () => {
-    state.selectedPostsToMove([]);
+    selectedPosts.clear();
   });
 
   extend(DiscussionPage.prototype, 'sidebarItems', function (items) {
-    if (state.selectedPostsToMove().length) {
+    if (selectedPosts.size > 0) {
       items.add(
         'movePosts',
         <Button
@@ -76,13 +80,13 @@ app.initializers.add('sycho/flarum-move-posts', () => {
           className="Button"
           onclick={() =>
             app.modal.show(MovePostsModal, {
-              postIds: state.selectedPostsToMove(),
+              postIds: Array.from(selectedPosts),
               discussion: this.discussion,
             })
           }
         >
           {app.translator.trans('fof-move-posts.forum.discussion.move_posts')}
-          <span className="Bubble MovePosts-Button-count">{state.selectedPostsToMove().length}</span>
+          <span className="Bubble MovePosts-Button-count">{selectedPosts.size}</span>
         </Button>
       );
     }
@@ -91,7 +95,10 @@ app.initializers.add('sycho/flarum-move-posts', () => {
   extend(PostControls, 'moderationControls', function (items, post) {
     if (post.contentType() !== 'comment') return;
 
-    const operation = state.has(post.id()) ? 'unmove' : 'move';
+    const postId = post.id();
+    if (!postId) return;
+
+    const operation = selectedPosts.has(postId) ? 'unmove' : 'move';
 
     items.add(
       'movePost',
@@ -99,9 +106,9 @@ app.initializers.add('sycho/flarum-move-posts', () => {
         icon="fas fa-arrow-right"
         onclick={() => {
           if (operation === 'move') {
-            state.push(post.id());
+            selectedPosts.add(postId);
           } else {
-            state.remove(post.id());
+            selectedPosts.delete(postId);
           }
 
           m.redraw();

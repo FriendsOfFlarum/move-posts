@@ -1,3 +1,4 @@
+import app from 'flarum/forum/app';
 import EventPost from 'flarum/forum/components/EventPost';
 import Link from 'flarum/common/components/Link';
 
