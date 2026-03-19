@@ -18,11 +18,11 @@ return [
 
         $db->table('settings')
             ->where('key', 'LIKE', 'sycho-move-posts.%')
-            ->update(['key' => $db->raw("REPLACE(`key`, 'sycho-move-posts.', 'fof-move-posts.')")]);
+            ->update(['key' => $db->raw("REPLACE({$db->getQueryGrammar()->wrap('key')}, 'sycho-move-posts.', 'fof-move-posts.')")]);
 
         $db->table('group_permission')
             ->where('permission', 'LIKE', 'sycho-move-posts:%')
-            ->update(['permission' => $db->raw("REPLACE(`permission`, 'sycho-move-posts:', 'fof-move-posts:')")]);
+            ->update(['permission' => $db->raw("REPLACE({$db->getQueryGrammar()->wrap('permission')}, 'sycho-move-posts:', 'fof-move-posts:')")]);
 
         $db->table('migrations')->where('extension', 'sycho-move-posts')->delete();
     },
