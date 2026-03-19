@@ -330,7 +330,7 @@ class MovePostsHandler
     }
 
     /**
-     * Groups sequantial event posts into one.
+     * Groups sequential event posts into one.
      */
     protected function groupSequentialPosts(EloquentCollection $posts): Collection
     {
@@ -369,18 +369,11 @@ class MovePostsHandler
         /** @var Connection $db */
         $db = $this->db->connection();
 
-        $updateFrom = $db->query()
-            ->select('rr.id')
-            ->from('posts', 'rr')
-            ->where('rr.discussion_id', $discussion->id)
-            ->orderBy('rr.number', 'desc');
-
         $db->table('posts')
-            ->mergeBindings($selectCount)
-            ->whereIn('id', function (QueryBuilder $query) use ($updateFrom) {
-                $query->select('r.id')->fromSub($updateFrom, 'r');
-            })
-            ->update(['number' => $db->raw("number + ({$selectCount->toSql()})")]);
+           ->mergeBindings($selectCount)
+           ->where('discussion_id', $discussion->id)
+           ->orderBy('number', 'desc')
+           ->update(['number' => $db->raw("number + ({$selectCount->toSql()})")]);
     }
 
     /**
