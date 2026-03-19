@@ -18,7 +18,7 @@ class MovePostsTest extends TestCase
     {
         parent::setUp();
 
-        $this->extension('sycho-move-posts');
+        $this->extension('fof-move-posts');
 
         $this->prepareDatabase([
             User::class => [

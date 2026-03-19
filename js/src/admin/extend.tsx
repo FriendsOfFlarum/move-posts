@@ -20,7 +20,7 @@ export default [
       () => ({
         icon: 'fas fa-exchange-alt',
         label: app.translator.trans('fof-move-posts.admin.permissions.move_posts', {}, true),
-        permission: 'sycho-move-posts:movePosts',
+        permission: 'fof-move-posts::movePosts',
       }),
       'moderate'
     ),

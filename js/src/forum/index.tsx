@@ -6,13 +6,12 @@ import Post from 'flarum/forum/components/Post';
 import CommentPost from 'flarum/forum/components/CommentPost';
 import DiscussionPage from 'flarum/forum/components/DiscussionPage';
 import PostControls from 'flarum/forum/utils/PostControls';
-import Icon from 'flarum/common/components/Icon';
 import Discussion from 'flarum/common/models/Discussion';
 
 import MovePostsModal from './components/MovePostsModal';
 export { default as extend } from './extend';
 
-app.initializers.add('sycho/flarum-move-posts', () => {
+app.initializers.add('fof/move-posts', () => {
   extend(Discussion.prototype, 'badges', function (badges) {
     if (this.isFirstMoved()) {
       badges.add(

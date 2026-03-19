@@ -1,6 +1,5 @@
 {
-  "name": "@sycho/flarum-move-posts",
-  "version": "0.0.0",
+  "name": "@fof/move-posts",
   "private": true,
   "prettier": "@flarum/prettier-config",
   "devDependencies": {
