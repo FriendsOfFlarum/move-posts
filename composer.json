@@ -24,7 +24,7 @@
     "require": {
         "php": "^8.2",
         "flarum/core": "^2.0.0",
-        "sycho/flarum-uikit": "^0.3.0",
+        "fof/ui-kit": "^2.0.0",
         "flarum/lock": "*",
         "flarum/tags": "*"
     },

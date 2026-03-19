@@ -2,7 +2,7 @@ import app from 'flarum/forum/app';
 import Button from 'flarum/common/components/Button';
 import FormModal from 'flarum/common/components/FormModal';
 import Switch from 'flarum/common/components/Switch';
-import DiscussionSearch from 'ext:sycho/flarum-uikit/forum/components/DiscussionSearch';
+import DiscussionSearch from 'ext:fof/ui-kit/forum/components/DiscussionSearch';
 import { ComponentAttrs } from 'flarum/common/Component';
 import type Discussion from 'flarum/common/models/Discussion';
 import GlobalSearchState from 'flarum/forum/states/GlobalSearchState';

@@ -17,7 +17,7 @@ use Flarum\Api\Resource;
 use Flarum\Api\Schema;
 
 return [
-    (new \SychO\UiKit\Extend\Register),
+    (new \FoF\UiKit\Extend\Register),
 
     (new Extend\Frontend('forum'))
         ->js(__DIR__.'/js/dist/forum.js')
