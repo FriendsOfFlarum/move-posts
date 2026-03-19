@@ -54,7 +54,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "SychO\\MovePosts\\Tests\\": "tests/"
+            "FoF\\MovePosts\\Tests\\": "tests/"
         }
     },
     "extra": {
