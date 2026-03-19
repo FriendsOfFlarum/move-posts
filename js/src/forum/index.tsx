@@ -76,7 +76,7 @@ app.initializers.add('fof/move-posts', () => {
         'movePosts',
         <Button
           icon="fas fa-exchange-alt"
-          className="Button"
+          className="Button MovePosts-Button"
           onclick={() =>
             app.modal.show(MovePostsModal, {
               postIds: Array.from(selectedPosts),

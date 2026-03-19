@@ -1,20 +1,18 @@
+.MovePosts-Button {
+  .Button-labelText {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+}
+
 .MovePosts-Button-count {
-  position: relative;
-  top: 0;
-  left: 0;
-  margin-left: 4px;
-  display: inline-block;
-  vertical-align: middle;
+  position: static;
+  box-shadow: none;
 }
 
 .Post--moving {
-  background: fade(@primary-color, 9);
-}
-
-.Form-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
+  background: color-mix(in srgb, var(--primary-color) 9%, transparent);
 }
 
 .MovePosts-Notification-targetDiscussion {
