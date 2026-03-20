@@ -133,7 +133,7 @@ export default class MovePostsModal extends Modal<MovePostsModalAttrs> {
     });
   }
 
-  onsubmit(e: any, emulate: boolean) {
+  override onsubmit(e: SubmitEvent | null, emulate: boolean = false) {
     if (e) e.preventDefault();
 
     this.isLoading = emulate ? 'check' : 'submit';
