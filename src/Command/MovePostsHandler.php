@@ -333,34 +333,32 @@ class MovePostsHandler
      */
     protected function groupSequentialPosts(EloquentCollection $posts): Collection
     {
-        $grouped = [];
-        $index = 0;
+        $posts = $posts->sortBy('number')->values();
 
-        $groupSequentialPosts = $this->settings->get('fof-move-posts.group_sequential_event_posts');
-
-        if ($groupSequentialPosts) {
-            foreach($posts as $post) {
-                $nextPost = $posts->firstWhere('number', $post->number+1);
-
-                if ($nextPost) {
-                    if (! isset($grouped[$index])) {
-                        $grouped[$index] = new Collection();
-                    }
-
-                    $grouped[$index]->push($post);
-                    $grouped[$index]->push($nextPost);
-                    $grouped[$index] = $grouped[$index]->unique('id');
-                } else {
-                    $index++;
-                }
-            }
-        } else {
-            foreach ($posts as $post) {
-                $grouped[$index++] = new Collection([$post]);
-            }
+        if (!$this->settings->get('fof-move-posts.group_sequential_event_posts')) {
+            return $posts->map(function ($post) {
+                return new Collection([$post]);
+            });
         }
 
-        return new Collection($grouped);
+        $grouped = new Collection();
+        $currentGroup = new Collection();
+
+        foreach ($posts as $post) {
+            if ($currentGroup->isEmpty() || $post->number === $currentGroup->last()->number + 1) {
+                $currentGroup->push($post);
+                continue;
+            }
+
+            $grouped->push($currentGroup);
+            $currentGroup = new Collection([$post]);
+        }
+
+        if (!$currentGroup->isEmpty()) {
+            $grouped->push($currentGroup);
+        }
+
+        return $grouped;
     }
 
     private function createNumberGaps(Discussion $discussion, QueryBuilder $selectCount): void
