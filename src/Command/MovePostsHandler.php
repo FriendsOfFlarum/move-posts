@@ -17,7 +17,6 @@ use Flarum\Lock\Event\DiscussionWasLocked;
 use Flarum\Post\CommentPost;
 use Flarum\Post\Post;
 use Flarum\Settings\SettingsRepositoryInterface;
-use Flarum\User\Guest;
 use Flarum\User\User;
 use FoF\MovePosts\Event\CreatedTargetDiscussion;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -221,13 +220,6 @@ class MovePostsHandler
     protected function createTargetDiscussion(Discussion $sourceDiscussion, CommentPost $firstPost, string $title, bool $emulate, User $actor): Discussion
     {
         $discussion = Discussion::start($title, $firstPost->user ?: new User());
-
-        // Set the same tags as the old discussion
-        if ($sourceDiscussion->tags && $sourceDiscussion->tags->isNotEmpty()) {
-            $discussion->afterSave(function (Discussion $discussion) use ($sourceDiscussion) {
-                $discussion->tags()->sync($sourceDiscussion->tags->pluck('id'));
-            });
-        }
 
         if (!$emulate) {
             $saved = $discussion->save();
