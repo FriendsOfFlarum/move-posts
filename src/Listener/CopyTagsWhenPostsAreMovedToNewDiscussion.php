@@ -6,7 +6,7 @@ use FoF\MovePosts\Event\CreatedTargetDiscussion;
 
 class CopyTagsWhenPostsAreMovedToNewDiscussion
 {
-    public function handle(CreatedTargetDiscussion $event)
+    public function handle(CreatedTargetDiscussion $event): void
     {
         $sourceDiscussion = $event->sourceDiscussion;
 
