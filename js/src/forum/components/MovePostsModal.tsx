@@ -5,10 +5,26 @@ import Switch from 'flarum/common/components/Switch';
 import DiscussionSearch from 'flarum/ui-kit/forum/DiscussionSearch';
 import type Discussion from 'flarum/common/models/Discussion';
 import GlobalSearchState from 'flarum/forum/states/GlobalSearchState';
+import LinkButton from 'flarum/common/components/LinkButton';
 
 export interface MovePostsModalAttrs extends IInternalModalAttrs {
   discussion: Discussion;
   postIds: string[];
+}
+
+export interface MovePostsResponse {
+  data: {
+    id: string;
+    type: 'discussions';
+    attributes: any;
+  };
+  meta: {
+    status: string;
+    postCount: number;
+    firstMovedPostNumber: number;
+    sourceDiscussionId: string;
+    targetDiscussionId: string;
+  };
 }
 
 export default class MovePostsModal extends Modal<MovePostsModalAttrs> {
@@ -126,7 +142,7 @@ export default class MovePostsModal extends Modal<MovePostsModalAttrs> {
     if (emulate) url += '/check';
 
     return app
-      .request({
+      .request<MovePostsResponse>({
         method: 'POST',
         url: `${app.forum.attribute('baseUrl')}${url}`,
         body: { data: this.data() },
@@ -146,12 +162,34 @@ export default class MovePostsModal extends Modal<MovePostsModalAttrs> {
           m.redraw();
         },
       })
-      .then((response: any) => {
+      .then((response) => {
         this.isLoading = false;
         if (!emulate) {
-          m.redraw();
-          window.location.reload();
-          app.modal.close();
+          app.store.pushPayload<Discussion>(response);
+
+          const targetDiscussion = app.store.getById<Discussion>('discussions', response.data.id);
+
+          app.alerts.show(
+            {
+              type: 'success',
+            },
+            targetDiscussion
+              ? app.translator.trans('fof-move-posts.forum.alerts.posts_moved_to', {
+                  count: response.meta.postCount,
+                  target_discussion: (
+                    <LinkButton href={app.route.discussion(targetDiscussion, response.meta.firstMovedPostNumber)}>
+                      {targetDiscussion.title()}
+                    </LinkButton>
+                  ),
+                })
+              : app.translator.trans('fof-move-posts.forum.modal.posts_moved')
+          );
+
+          if (targetDiscussion) {
+            m.route.set(app.route.discussion(targetDiscussion, response.meta.firstMovedPostNumber));
+          }
+
+          this.hide();
         }
 
         return response;

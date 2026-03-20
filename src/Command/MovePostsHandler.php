@@ -92,27 +92,27 @@ class MovePostsHandler
      * @throws \Flarum\User\Exception\PermissionDeniedException
      * @throws \Illuminate\Validation\ValidationException
      * @throws MoveOldPostToNewerDiscussionException
-     * @return string|null
+     * @return array<string, mixed>|string|null
      */
     public function handle(MovePosts $command)
     {
         try {
             $this->db->connection()->beginTransaction();
-            $status = $this->process($command);
+            $result = $this->process($command);
             $this->db->connection()->commit();
         } catch (\Exception $e) {
             $this->db->connection()->rollBack();
             throw $e;
         }
 
-        return $status;
+        return $result;
     }
 
     /**
      * @throws \Flarum\User\Exception\PermissionDeniedException
      * @throws \Illuminate\Validation\ValidationException
      * @throws MoveOldPostToNewerDiscussionException
-     * @return string|void
+     * @return array<string, mixed>|string
      */
     protected function process(MovePosts $command)
     {
@@ -172,14 +172,18 @@ class MovePostsHandler
         });
 
         if ($newDiscussion || $posts->first()->created_at >= $targetDiscussion->lastPost->created_at) {
+            $status = self::SIMPLE_MOVE;
+
             if ($emulate) {
-                return self::SIMPLE_MOVE;
+                return $status;
             }
 
             $posts = $this->simpleMove($posts, $targetDiscussion);
         } else {
+            $status = self::COMPLEX_MOVE;
+
             if ($emulate) {
-                return self::COMPLEX_MOVE;
+                return $status;
             }
 
             $posts = $this->complexMove($posts, $targetDiscussion);
@@ -212,6 +216,14 @@ class MovePostsHandler
         $this->events->dispatch(
             new PostsMoved($posts, $targetDiscussion, $sourceDiscussion, $actor)
         );
+
+        return [
+            'status' => $status,
+            'postCount' => $posts->count(),
+            'firstMovedPostNumber' => $posts->min('number'),
+            'sourceDiscussion' => $sourceDiscussion->fresh(),
+            'targetDiscussion' => $targetDiscussion->fresh(),
+        ];
     }
 
     /**

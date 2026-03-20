@@ -11,17 +11,24 @@
 
 namespace FoF\MovePosts\Api\Controller;
 
+use Flarum\Api\Controller\AbstractShowController;
+use Flarum\Api\Serializer\DiscussionSerializer;
 use Flarum\Http\RequestUtil;
+use FoF\MovePosts\Command\MovePosts;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Support\Arr;
-use Laminas\Diactoros\Response\EmptyResponse;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use FoF\MovePosts\Command\MovePosts;
+use Tobscure\JsonApi\Document;
 
-class MovePostsController implements RequestHandlerInterface
+class MovePostsController extends AbstractShowController
 {
+    /**
+     * The serializer instance for this request.
+     *
+     * @var string
+     */
+    public $serializer = DiscussionSerializer::class;
+
     /**
      * @var Dispatcher
      */
@@ -32,15 +39,21 @@ class MovePostsController implements RequestHandlerInterface
         $this->bus = $bus;
     }
 
-    public function handle(ServerRequestInterface $request): ResponseInterface
+    protected function data(ServerRequestInterface $request, Document $document)
     {
         $actor = RequestUtil::getActor($request);
         $data = Arr::get($request->getParsedBody(), 'data', []);
 
-        $this->bus->dispatch(
-            new MovePosts($actor, $data, false)
-        );
+        $result = $this->bus->dispatch(new MovePosts($actor, $data, false));
 
-        return new EmptyResponse(200);
+        $document->setMeta([
+            'status' => $result['status'],
+            'postCount' => $result['postCount'],
+            'firstMovedPostNumber' => $result['firstMovedPostNumber'],
+            'sourceDiscussionId' => (string) $result['sourceDiscussion']->id,
+            'targetDiscussionId' => (string) $result['targetDiscussion']->id,
+        ]);
+
+        return $result['targetDiscussion'];
     }
 }
