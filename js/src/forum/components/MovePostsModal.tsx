@@ -22,7 +22,7 @@ export interface MovePostsResponse {
 }
 
 export default class MovePostsModal extends FormModal<MovePostsModalAttrs> {
-  isLoading: string | boolean = false;
+  isLoading: 'check' | 'submit' | boolean = false;
   newDiscussion: boolean = false;
   newDiscussionTitle: string = '';
   targetDiscussionId?: string;
@@ -127,62 +127,62 @@ export default class MovePostsModal extends FormModal<MovePostsModalAttrs> {
     });
   }
 
-  override onsubmit(e: SubmitEvent | null, emulate: boolean = false) {
-    if (e) e.preventDefault();
-
+  override async onsubmit(event: SubmitEvent | null, emulate: boolean = false) {
+    event?.preventDefault();
     this.isLoading = emulate ? 'check' : 'submit';
-    let url = '/api/posts/move';
 
-    if (emulate) url += '/check';
-
-    return app
-      .request<MovePostsResponse>({
-        method: 'POST',
-        url: `${app.forum.attribute('baseUrl')}${url}`,
-        body: { data: this.data() },
-        errorHandler: (e: any) => {
-          const error = e.response.errors[0];
-          this.isLoading = false;
-
-          if (!['move_old_post_to_newer_discussion', 'move_posts_to_same_discussion'].includes(error.code)) {
-            throw e;
-          }
-
-          this.alertAttrs = {
-            type: 'error',
-            content: app.translator.trans(`fof-move-posts.forum.error.${error.code}`),
-          };
-
-          m.redraw();
-        },
-      })
-      .then((response) => {
+    const response = await app.request<MovePostsResponse>({
+      method: 'POST',
+      url: `${app.forum.attribute('baseUrl')}/api/posts/move${emulate ? '/check' : ''}`,
+      body: { data: this.data() },
+      errorHandler: (e) => {
         this.isLoading = false;
-        if (!emulate) {
-          const targetDiscussion = app.store.getById<Discussion>('discussions', response.targetDiscussionId);
-
-          app.alerts.show(
-            {
-              type: 'success',
-            },
-            targetDiscussion
-              ? app.translator.trans('fof-move-posts.forum.alerts.posts_moved_to', {
-                  count: response.postCount,
-                  target_discussion: (
-                    <LinkButton href={app.route.discussion(targetDiscussion, response.firstMovedPostNumber)}>{targetDiscussion.title()}</LinkButton>
-                  ),
-                })
-              : app.translator.trans('fof-move-posts.forum.alerts.posts_moved', { count: response.meta.postCount })
-          );
-
-          if (targetDiscussion) {
-            m.route.set(app.route.discussion(targetDiscussion, response.firstMovedPostNumber));
-          }
-
-          this.hide();
+        if (!e?.response?.errors?.[0]?.code) {
+          throw e;
         }
 
-        return response;
-      });
+        const errorCode = e.response.errors[0].code;
+
+        if (!['move_old_post_to_newer_discussion', 'move_posts_to_same_discussion'].includes(errorCode)) {
+          throw e;
+        }
+
+        this.alertAttrs = {
+          type: 'error',
+          content: app.translator.trans(`fof-move-posts.forum.error.${errorCode}`),
+        };
+
+        m.redraw();
+      },
+    });
+    this.isLoading = false;
+
+    if (emulate) {
+      return response;
+    }
+
+    const targetDiscussion = app.store.getById<Discussion>('discussions', response.targetDiscussionId);
+
+    app.alerts.show(
+      {
+        type: 'success',
+      },
+      targetDiscussion
+        ? app.translator.trans('fof-move-posts.forum.alerts.posts_moved_to', {
+            count: response.postCount,
+            target_discussion: (
+              <LinkButton href={app.route.discussion(targetDiscussion, response.firstMovedPostNumber)}>{targetDiscussion.title()}</LinkButton>
+            ),
+          })
+        : app.translator.trans('fof-move-posts.forum.alerts.posts_moved', { count: response.postCount })
+    );
+
+    if (targetDiscussion) {
+      m.route.set(app.route.discussion(targetDiscussion, response.firstMovedPostNumber));
+    }
+
+    this.hide();
+
+    return response;
   }
 }
