@@ -182,7 +182,7 @@ export default class MovePostsModal extends Modal<MovePostsModalAttrs> {
                     </LinkButton>
                   ),
                 })
-              : app.translator.trans('fof-move-posts.forum.modal.posts_moved')
+              : app.translator.trans('fof-move-posts.forum.alerts.posts_moved', { count: response.meta.postCount })
           );
 
           if (targetDiscussion) {
