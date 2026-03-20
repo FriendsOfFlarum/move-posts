@@ -8,6 +8,7 @@ export default [
       label: app.translator.trans('fof-move-posts.admin.settings.moved_first_post_content', {}, true),
       help: app.translator.trans('fof-move-posts.admin.settings.moved_first_post_content_help', {}, true),
       default: app.translator.trans('fof-move-posts.lib.discussion.first_post.default_content', {}, true),
+      placeholder: app.translator.trans('fof-move-posts.lib.discussion.first_post.default_content', {}, true),
       type: 'textarea',
       rows: 6,
     }))
