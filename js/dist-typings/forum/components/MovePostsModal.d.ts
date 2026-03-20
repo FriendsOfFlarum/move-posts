@@ -5,6 +5,20 @@ export interface MovePostsModalAttrs extends IInternalModalAttrs {
     discussion: Discussion;
     postIds: string[];
 }
+export interface MovePostsResponse {
+    data: {
+        id: string;
+        type: 'discussions';
+        attributes: any;
+    };
+    meta: {
+        status: string;
+        postCount: number;
+        firstMovedPostNumber: number;
+        sourceDiscussionId: string;
+        targetDiscussionId: string;
+    };
+}
 export default class MovePostsModal extends Modal<MovePostsModalAttrs> {
     isLoading: string | boolean;
     newDiscussion: boolean;
@@ -16,5 +30,5 @@ export default class MovePostsModal extends Modal<MovePostsModalAttrs> {
     content(): JSX.Element;
     data(): Record<string, unknown>;
     emulate(): void;
-    onsubmit(e: any, emulate: boolean): Promise<any>;
+    onsubmit(e: any, emulate: boolean): Promise<MovePostsResponse>;
 }
