@@ -19,13 +19,6 @@ use Flarum\Post\Post;
 use Flarum\Settings\SettingsRepositoryInterface;
 use Flarum\User\User;
 use FoF\MovePosts\Event\CreatedTargetDiscussion;
-use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Database\Connection;
-use Illuminate\Database\ConnectionResolverInterface;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Illuminate\Database\Query\Builder as QueryBuilder;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 use FoF\MovePosts\Event\PostsMoved;
 use FoF\MovePosts\Exception\MoveOldPostToNewerDiscussionException;
 use FoF\MovePosts\Exception\MovePostsFromDifferentDiscussionsException;
@@ -33,6 +26,13 @@ use FoF\MovePosts\Exception\MovePostsToSameDiscussionException;
 use FoF\MovePosts\MovedDiscussionFirstPostFactory;
 use FoF\MovePosts\MovePostsValidator;
 use FoF\MovePosts\PostMovedPost;
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Database\Connection;
+use Illuminate\Database\ConnectionResolverInterface;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 
 class MovePostsHandler
 {
@@ -58,27 +58,26 @@ class MovePostsHandler
      * @throws \Illuminate\Validation\ValidationException
      * @throws MoveOldPostToNewerDiscussionException
      */
-    public function handle(MovePosts $command): ?string
+    public function handle(MovePosts $command): string|array|null
     {
         try {
             $this->db->connection()->beginTransaction();
-            $status = $this->process($command);
+            $result = $this->process($command);
             $this->db->connection()->commit();
         } catch (\Exception $e) {
             $this->db->connection()->rollBack();
             throw $e;
         }
 
-        return $status;
+        return $result;
     }
 
     /**
      * @throws \Flarum\User\Exception\PermissionDeniedException
      * @throws \Illuminate\Validation\ValidationException
      * @throws MoveOldPostToNewerDiscussionException
-     * @return string|void
      */
-    protected function process(MovePosts $command): ?string
+    protected function process(MovePosts $command): string|array|null
     {
         $actor = $command->actor;
         $data = $command->data;
@@ -136,14 +135,18 @@ class MovePostsHandler
         });
 
         if ($newDiscussion || $posts->first()->created_at >= $targetDiscussion->lastPost->created_at) {
+            $status = self::SIMPLE_MOVE;
+
             if ($emulate) {
-                return self::SIMPLE_MOVE;
+                return $status;
             }
 
             $posts = $this->simpleMove($posts, $targetDiscussion);
         } else {
+            $status = self::COMPLEX_MOVE;
+
             if ($emulate) {
-                return self::COMPLEX_MOVE;
+                return $status;
             }
 
             $posts = $this->complexMove($posts, $targetDiscussion);
@@ -179,7 +182,13 @@ class MovePostsHandler
             new PostsMoved($posts, $targetDiscussion, $sourceDiscussion, $actor)
         );
 
-        return null;
+        return [
+            'status' => $status,
+            'postCount' => $posts->count(),
+            'firstMovedPostNumber' => $posts->min('number'),
+            'sourceDiscussion' => $sourceDiscussion->fresh(),
+            'targetDiscussion' => $targetDiscussion->fresh(),
+        ];
     }
 
     /**

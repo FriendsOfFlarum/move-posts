@@ -3,13 +3,13 @@
 namespace FoF\MovePosts\Api\Controller;
 
 use Flarum\Http\RequestUtil;
+use FoF\MovePosts\Command\MovePosts;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Support\Arr;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use FoF\MovePosts\Command\MovePosts;
 
 class ShowMovePostsStatusController implements RequestHandlerInterface
 {

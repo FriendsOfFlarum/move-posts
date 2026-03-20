@@ -11,19 +11,21 @@
 
 namespace FoF\MovePosts\Api\Controller;
 
+use Flarum\Api\JsonApi;
 use Flarum\Http\RequestUtil;
+use FoF\MovePosts\Command\MovePosts;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Support\Arr;
-use Laminas\Diactoros\Response\EmptyResponse;
+use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use FoF\MovePosts\Command\MovePosts;
 
 class MovePostsController implements RequestHandlerInterface
 {
     public function __construct(
-        protected Dispatcher $bus
+        protected Dispatcher $bus,
+        protected JsonApi $api
     ) {
     }
 
@@ -32,10 +34,14 @@ class MovePostsController implements RequestHandlerInterface
         $actor = RequestUtil::getActor($request);
         $data = Arr::get($request->getParsedBody(), 'data', []);
 
-        $this->bus->dispatch(
-            new MovePosts($actor, $data, false)
-        );
+        $result = $this->bus->dispatch(new MovePosts($actor, $data, false));
 
-        return new EmptyResponse(200);
+        return new JsonResponse([
+            'status' => $result['status'],
+            'postCount' => $result['postCount'],
+            'firstMovedPostNumber' => $result['firstMovedPostNumber'],
+            'sourceDiscussionId' => (string) $result['sourceDiscussion']->id,
+            'targetDiscussionId' => (string) $result['targetDiscussion']->id,
+        ]);
     }
 }
