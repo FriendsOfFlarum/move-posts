@@ -161,28 +161,21 @@ export default class MovePostsModal extends FormModal<MovePostsModalAttrs> {
       return response;
     }
 
-    let targetDiscussion = app.store.getById<Discussion>('discussions', response.targetDiscussionId);
-    if (!targetDiscussion) {
-      targetDiscussion = await app.store.find<Discussion>('discussions', response.targetDiscussionId);
-    }
+    const targetDiscussion =
+      app.store.getById<Discussion>('discussions', response.targetDiscussionId) ??
+      (await app.store.find<Discussion>('discussions', response.targetDiscussionId));
 
     app.alerts.show(
-      {
-        type: 'success',
-      },
-      targetDiscussion
-        ? app.translator.trans('fof-move-posts.forum.alerts.posts_moved_to', {
-            count: response.postCount,
-            target_discussion: (
-              <LinkButton href={app.route.discussion(targetDiscussion, response.firstMovedPostNumber)}>{targetDiscussion.title()}</LinkButton>
-            ),
-          })
-        : app.translator.trans('fof-move-posts.forum.alerts.posts_moved', { count: response.postCount })
+      { type: 'success' },
+      app.translator.trans('fof-move-posts.forum.alerts.posts_moved_to', {
+        count: response.postCount,
+        target_discussion: (
+          <LinkButton href={app.route.discussion(targetDiscussion, response.firstMovedPostNumber)}>{targetDiscussion.title()}</LinkButton>
+        ),
+      })
     );
 
-    if (targetDiscussion) {
-      m.route.set(app.route.discussion(targetDiscussion, response.firstMovedPostNumber));
-    }
+    m.route.set(app.route.discussion(targetDiscussion, response.firstMovedPostNumber));
 
     this.hide();
 
