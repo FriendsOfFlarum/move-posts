@@ -62,5 +62,6 @@ return [
         ->type(Notification\PostMovedBlueprint::class, ['alert']),
 
     (new Extend\Event)
-        ->listen(Event\PostsMoved::class, Listener\SendNotificationsWhenPostsAreMoved::class),
+        ->listen(Event\PostsMoved::class, Listener\SendNotificationsWhenPostsAreMoved::class)
+        ->listen(Event\CreatedTargetDiscussion::class, Listener\CopyTagsWhenPostsAreMovedToNewDiscussion::class),
 ];
