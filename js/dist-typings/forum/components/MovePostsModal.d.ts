@@ -14,7 +14,7 @@ export interface MovePostsResponse {
     targetDiscussionId: string;
 }
 export default class MovePostsModal extends FormModal<MovePostsModalAttrs> {
-    isLoading: string | boolean;
+    isLoading: 'check' | 'submit' | boolean;
     newDiscussion: boolean;
     newDiscussionTitle: string;
     targetDiscussionId?: string;
@@ -24,5 +24,5 @@ export default class MovePostsModal extends FormModal<MovePostsModalAttrs> {
     content(): JSX.Element;
     data(): Record<string, unknown>;
     emulate(): void;
-    onsubmit(e: SubmitEvent | null, emulate?: boolean): Promise<MovePostsResponse>;
+    onsubmit(event: SubmitEvent | null, emulate?: boolean): Promise<MovePostsResponse>;
 }
