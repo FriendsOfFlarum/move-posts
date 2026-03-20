@@ -172,7 +172,7 @@ export default class MovePostsModal extends FormModal<MovePostsModalAttrs> {
                     <LinkButton href={app.route.discussion(targetDiscussion, response.firstMovedPostNumber)}>{targetDiscussion.title()}</LinkButton>
                   ),
                 })
-              : app.translator.trans('fof-move-posts.forum.modal.posts_moved')
+              : app.translator.trans('fof-move-posts.forum.alerts.posts_moved', { count: response.meta.postCount })
           );
 
           if (targetDiscussion) {
