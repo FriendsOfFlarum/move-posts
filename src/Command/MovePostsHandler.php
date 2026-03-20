@@ -19,6 +19,7 @@ use Flarum\Post\Post;
 use Flarum\Settings\SettingsRepositoryInterface;
 use Flarum\User\Guest;
 use Flarum\User\User;
+use FoF\MovePosts\Event\CreatedTargetDiscussion;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Connection;
 use Illuminate\Database\ConnectionResolverInterface;
@@ -104,7 +105,7 @@ class MovePostsHandler
         }
 
         $targetDiscussion = $newDiscussion
-            ? $this->createTargetDiscussion($sourceDiscussion, $posts->first(), Arr::get($data, 'newDiscussionTitle'), $emulate)
+            ? $this->createTargetDiscussion($sourceDiscussion, $posts->first(), Arr::get($data, 'newDiscussionTitle'), $emulate, $actor)
             : $this->discussions->findOrFail(Arr::get($data, 'targetDiscussionId'));
 
         if ($sourceDiscussion->id === $targetDiscussion->id){
@@ -185,7 +186,7 @@ class MovePostsHandler
     /**
      * Creates a target discussion when specified.
      */
-    protected function createTargetDiscussion(Discussion $sourceDiscussion, CommentPost $firstPost, string $title, bool $emulate): Discussion
+    protected function createTargetDiscussion(Discussion $sourceDiscussion, CommentPost $firstPost, string $title, bool $emulate, User $actor): Discussion
     {
         $discussion = Discussion::start($title, $firstPost->user ?? new Guest);
 
@@ -196,8 +197,14 @@ class MovePostsHandler
             });
         }
 
-        if (! $emulate) {
-            $discussion->save();
+        if (!$emulate) {
+            $saved = $discussion->save();
+
+            if ($saved) {
+                $this->events->dispatch(
+                    new CreatedTargetDiscussion($discussion, $sourceDiscussion, $actor)
+                );
+            }
         }
 
         return $discussion;
