@@ -30,5 +30,5 @@ export default class MovePostsModal extends Modal<MovePostsModalAttrs> {
     content(): JSX.Element;
     data(): Record<string, unknown>;
     emulate(): void;
-    onsubmit(e: any, emulate: boolean): Promise<MovePostsResponse>;
+    onsubmit(e: SubmitEvent | null, emulate?: boolean): Promise<MovePostsResponse>;
 }
