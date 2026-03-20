@@ -161,7 +161,10 @@ export default class MovePostsModal extends FormModal<MovePostsModalAttrs> {
       return response;
     }
 
-    const targetDiscussion = app.store.getById<Discussion>('discussions', response.targetDiscussionId);
+    let targetDiscussion = app.store.getById<Discussion>('discussions', response.targetDiscussionId);
+    if (!targetDiscussion) {
+      targetDiscussion = await app.store.find<Discussion>('discussions', response.targetDiscussionId);
+    }
 
     app.alerts.show(
       {
