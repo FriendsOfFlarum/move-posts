@@ -39,50 +39,48 @@ export default class MovePostsModal extends FormModal<MovePostsModalAttrs> {
 
   content() {
     return (
-      <div className="Modal-body">
-        <form className="Form" onsubmit={this.onsubmit.bind(this)}>
+      <div className="Modal-body Form">
+        <FormGroup
+          label={app.translator.trans('fof-move-posts.forum.modal.selected_posts', { count: this.attrs.postIds.length })}
+          value={this.attrs.postIds.join(', ')}
+          readonly
+        />
+        <FormGroup label={app.translator.trans('fof-move-posts.forum.modal.new_discussion')} type="switch" stream={this.newDiscussion} />
+        {this.newDiscussion() ? (
           <FormGroup
-            label={app.translator.trans('fof-move-posts.forum.modal.selected_posts', { count: this.attrs.postIds.length })}
-            value={this.attrs.postIds.join(', ')}
-            readonly
+            label={app.translator.trans('fof-move-posts.forum.modal.discussion_name')}
+            help={app.translator.trans('fof-move-posts.forum.modal.discussion_help')}
+            stream={this.newDiscussionTitle}
+            required
           />
-          <FormGroup label={app.translator.trans('fof-move-posts.forum.modal.new_discussion')} type="switch" stream={this.newDiscussion} />
-          {this.newDiscussion() ? (
-            <FormGroup
-              label={app.translator.trans('fof-move-posts.forum.modal.discussion_name')}
-              help={app.translator.trans('fof-move-posts.forum.modal.discussion_help')}
-              stream={this.newDiscussionTitle}
-              required
+        ) : (
+          <div className="Form-group">
+            <label for="destination">{app.translator.trans('fof-move-posts.forum.modal.destination')}</label>
+            <DiscussionSearch
+              state={this.search}
+              ignore={this.attrs.discussion.id()}
+              onSelect={(discussion: Discussion) => this.targetDiscussionId(discussion.id())}
             />
-          ) : (
-            <div className="Form-group">
-              <label for="destination">{app.translator.trans('fof-move-posts.forum.modal.destination')}</label>
-              <DiscussionSearch
-                state={this.search}
-                ignore={this.attrs.discussion.id()}
-                onSelect={(discussion: Discussion) => this.targetDiscussionId(discussion.id())}
-              />
-            </div>
-          )}
-          <div className="Form-group Form-controls">
-            <Button
-              className="Button Button--primary"
-              type="submit"
-              loading={this.isLoading() === 'submit'}
-              disabled={this.isLoading() === 'check' || !this.canSubmit()}
-            >
-              {app.translator.trans('fof-move-posts.forum.modal.submit')}
-            </Button>
-            <Button
-              className="Button"
-              onclick={this.emulate.bind(this)}
-              loading={this.isLoading() === 'check'}
-              disabled={this.isLoading() === 'submit' || !this.canSubmit()}
-            >
-              {app.translator.trans('fof-move-posts.forum.modal.check')}
-            </Button>
           </div>
-        </form>
+        )}
+        <div className="Form-group Form-controls">
+          <Button
+            className="Button Button--primary"
+            type="submit"
+            loading={this.isLoading() === 'submit'}
+            disabled={this.isLoading() === 'check' || !this.canSubmit()}
+          >
+            {app.translator.trans('fof-move-posts.forum.modal.submit')}
+          </Button>
+          <Button
+            className="Button"
+            onclick={this.emulate.bind(this)}
+            loading={this.isLoading() === 'check'}
+            disabled={this.isLoading() === 'submit' || !this.canSubmit()}
+          >
+            {app.translator.trans('fof-move-posts.forum.modal.check')}
+          </Button>
+        </div>
       </div>
     );
   }
