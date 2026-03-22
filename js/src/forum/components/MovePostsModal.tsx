@@ -6,7 +6,7 @@ import LinkButton from 'flarum/common/components/LinkButton';
 import DiscussionSearch from 'ext:fof/ui-kit/forum/components/DiscussionSearch';
 import type Discussion from 'flarum/common/models/Discussion';
 import GlobalSearchState from 'flarum/forum/states/GlobalSearchState';
-import { IInternalModalAttrs } from 'flarum/common/components/Modal';
+import { type IInternalModalAttrs } from 'flarum/common/components/Modal';
 
 export interface MovePostsModalAttrs extends IInternalModalAttrs {
   discussion: Discussion;
@@ -129,6 +129,17 @@ export default class MovePostsModal extends FormModal<MovePostsModalAttrs> {
 
   override async onsubmit(event: SubmitEvent | null, emulate: boolean = false) {
     event?.preventDefault();
+
+    // Warn before moving the entire discussion into a new one
+    if (
+      !emulate &&
+      this.newDiscussion &&
+      this.attrs.discussion.commentCount() === this.attrs.postIds.length &&
+      !confirm(app.translator.trans('fof-move-posts.forum.modal.confirm_move_all_to_new_discussion') as string)
+    ) {
+      return;
+    }
+
     this.isLoading = emulate ? 'check' : 'submit';
 
     const response = await app.request<MovePostsResponse>({
