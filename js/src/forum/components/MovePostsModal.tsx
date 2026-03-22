@@ -6,6 +6,7 @@ import DiscussionSearch from 'flarum/ui-kit/forum/DiscussionSearch';
 import type Discussion from 'flarum/common/models/Discussion';
 import GlobalSearchState from 'flarum/forum/states/GlobalSearchState';
 import LinkButton from 'flarum/common/components/LinkButton';
+import Stream from 'flarum/common/utils/Stream';
 
 export interface MovePostsModalAttrs extends IInternalModalAttrs {
   discussion: Discussion;
@@ -28,10 +29,10 @@ export interface MovePostsResponse {
 }
 
 export default class MovePostsModal extends Modal<MovePostsModalAttrs> {
-  isLoading: string | boolean = false;
-  newDiscussion: boolean = false;
-  newDiscussionTitle: string = '';
-  targetDiscussionId?: string;
+  isLoading: Stream<'check' | 'submit' | boolean> = Stream(false);
+  newDiscussion: Stream<boolean> = Stream(false);
+  newDiscussionTitle: Stream<string> = Stream('');
+  targetDiscussionId: Stream<string> = Stream('');
   search = new GlobalSearchState();
 
   className() {
@@ -51,15 +52,15 @@ export default class MovePostsModal extends Modal<MovePostsModalAttrs> {
             <input className="FormControl" readonly value={this.attrs.postIds.join(', ')} />
           </div>
           <div className="Form-group">
-            <Switch state={this.newDiscussion} onchange={() => (this.newDiscussion = !this.newDiscussion)}>
+            <Switch state={this.newDiscussion()} onchange={this.newDiscussion}>
               {app.translator.trans('fof-move-posts.forum.modal.new_discussion')}
             </Switch>
           </div>
-          {this.newDiscussion ? (
+          {this.newDiscussion() ? (
             <div className="Form-group">
               <label for="discussion_name">{app.translator.trans('fof-move-posts.forum.modal.discussion_name')}</label>
               <p className="helptext">{app.translator.trans('fof-move-posts.forum.modal.discussion_help')}</p>
-              <input id="discussion_name" className="FormControl" required={true} oninput={(e: any) => (this.newDiscussionTitle = e.target.value)} />
+              <input id="discussion_name" className="FormControl" required={true} bidi={this.newDiscussionTitle} />
             </div>
           ) : (
             <div className="Form-group">
@@ -67,7 +68,7 @@ export default class MovePostsModal extends Modal<MovePostsModalAttrs> {
               <DiscussionSearch
                 state={this.search}
                 ignore={this.attrs.discussion.id()}
-                onSelect={(discussion: Discussion) => (this.targetDiscussionId = discussion.id())}
+                onSelect={(discussion: Discussion) => this.targetDiscussionId(discussion.id())}
               />
             </div>
           )}
@@ -75,16 +76,16 @@ export default class MovePostsModal extends Modal<MovePostsModalAttrs> {
             <Button
               className="Button Button--primary"
               type="submit"
-              loading={this.isLoading === 'submit'}
-              disabled={this.isLoading === 'check' || (!this.targetDiscussionId && !this.newDiscussionTitle)}
+              loading={this.isLoading() === 'submit'}
+              disabled={this.isLoading() === 'check' || !this.canSubmit()}
             >
               {app.translator.trans('fof-move-posts.forum.modal.submit')}
             </Button>
             <Button
               className="Button"
               onclick={this.emulate.bind(this)}
-              loading={this.isLoading === 'check'}
-              disabled={this.isLoading === 'submit' || (!this.targetDiscussionId && !this.newDiscussionTitle)}
+              loading={this.isLoading() === 'check'}
+              disabled={this.isLoading() === 'submit' || !this.canSubmit()}
             >
               {app.translator.trans('fof-move-posts.forum.modal.check')}
             </Button>
@@ -94,17 +95,21 @@ export default class MovePostsModal extends Modal<MovePostsModalAttrs> {
     );
   }
 
+  canSubmit() {
+    return (this.targetDiscussionId().length && !this.newDiscussion()) || (this.newDiscussionTitle().length && this.newDiscussion());
+  }
+
   data() {
     const data: Record<string, unknown> = {
       sourceDiscussionId: this.attrs.discussion.id(),
       postIds: this.attrs.postIds,
     };
 
-    if (this.newDiscussion) {
+    if (this.newDiscussion()) {
       data.newDiscussion = true;
-      data.newDiscussionTitle = this.newDiscussionTitle;
+      data.newDiscussionTitle = this.newDiscussionTitle();
     } else {
-      data.targetDiscussionId = this.targetDiscussionId;
+      data.targetDiscussionId = this.targetDiscussionId();
     }
 
     return data;
@@ -133,66 +138,70 @@ export default class MovePostsModal extends Modal<MovePostsModalAttrs> {
     });
   }
 
-  override onsubmit(e: SubmitEvent | null, emulate: boolean = false) {
-    if (e) e.preventDefault();
+  override async onsubmit(event: SubmitEvent | null, emulate: boolean = false) {
+    event?.preventDefault();
 
-    this.isLoading = emulate ? 'check' : 'submit';
-    let url = '/api/posts/move';
+    // Warn before moving the entire discussion into a new one
+    if (
+      !emulate &&
+      this.newDiscussion() &&
+      this.attrs.discussion.commentCount() === this.attrs.postIds.length &&
+      !confirm(app.translator.trans('fof-move-posts.forum.modal.confirm_move_all_to_new_discussion') as string)
+    ) {
+      return;
+    }
 
-    if (emulate) url += '/check';
+    this.isLoading(emulate ? 'check' : 'submit');
 
-    return app
-      .request<MovePostsResponse>({
-        method: 'POST',
-        url: `${app.forum.attribute('baseUrl')}${url}`,
-        body: { data: this.data() },
-        errorHandler: (e: any) => {
-          const error = e.response.errors[0];
-          this.isLoading = false;
-
-          if (!['move_old_post_to_newer_discussion', 'move_posts_to_same_discussion'].includes(error.code)) {
-            throw e;
-          }
-
-          this.alertAttrs = {
-            type: 'error',
-            content: app.translator.trans(`fof-move-posts.forum.error.${error.code}`),
-          };
-
-          m.redraw();
-        },
-      })
-      .then((response) => {
-        this.isLoading = false;
-        if (!emulate) {
-          app.store.pushPayload<Discussion>(response);
-
-          const targetDiscussion = app.store.getById<Discussion>('discussions', response.data.id);
-
-          app.alerts.show(
-            {
-              type: 'success',
-            },
-            targetDiscussion
-              ? app.translator.trans('fof-move-posts.forum.alerts.posts_moved_to', {
-                  count: response.meta.postCount,
-                  target_discussion: (
-                    <LinkButton href={app.route.discussion(targetDiscussion, response.meta.firstMovedPostNumber)}>
-                      {targetDiscussion.title()}
-                    </LinkButton>
-                  ),
-                })
-              : app.translator.trans('fof-move-posts.forum.alerts.posts_moved', { count: response.meta.postCount })
-          );
-
-          if (targetDiscussion) {
-            m.route.set(app.route.discussion(targetDiscussion, response.meta.firstMovedPostNumber));
-          }
-
-          this.hide();
+    const response = await app.request<MovePostsResponse>({
+      method: 'POST',
+      url: `${app.forum.attribute('baseUrl')}/api/posts/move${emulate ? '/check' : ''}`,
+      body: { data: this.data() },
+      errorHandler: (e) => {
+        this.isLoading(false);
+        if (!e?.response?.errors?.[0]?.code) {
+          throw e;
         }
 
-        return response;
-      });
+        const errorCode = e.response.errors[0].code;
+
+        if (!['move_old_post_to_newer_discussion', 'move_posts_to_same_discussion'].includes(errorCode)) {
+          throw e;
+        }
+
+        this.alertAttrs = {
+          type: 'error',
+          content: app.translator.trans(`fof-move-posts.forum.error.${errorCode}`),
+        };
+
+        m.redraw();
+      },
+    });
+    this.isLoading(false);
+
+    if (emulate) {
+      return response;
+    }
+
+    app.store.pushPayload<Discussion>(response);
+
+    const targetDiscussion =
+      app.store.getById<Discussion>('discussions', response.data.id) ?? (await app.store.find<Discussion>('discussions', response.data.id));
+
+    app.alerts.show(
+      { type: 'success' },
+      app.translator.trans('fof-move-posts.forum.alerts.posts_moved_to', {
+        count: response.meta.postCount,
+        target_discussion: (
+          <LinkButton href={app.route.discussion(targetDiscussion, response.meta.firstMovedPostNumber)}>{targetDiscussion.title()}</LinkButton>
+        ),
+      })
+    );
+
+    m.route.set(app.route.discussion(targetDiscussion, response.meta.firstMovedPostNumber));
+
+    this.hide();
+
+    return response;
   }
 }
