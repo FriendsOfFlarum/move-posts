@@ -7,10 +7,9 @@ export { default as extend } from './extend';
 
 app.initializers.add('fof/move-posts', () => {
   app.beforeMount(() => {
+    // Only load moderator features for users who can move posts
     if (app.forum.attribute('canMovePosts')) {
-      import('./moderatorFeatures').then(({ default: moderatorFeatures }) => {
-        moderatorFeatures();
-      });
+      import('./moderatorFeatures');
     }
   });
 
