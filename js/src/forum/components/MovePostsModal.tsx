@@ -85,7 +85,7 @@ export default class MovePostsModal extends FormModal<MovePostsModalAttrs> {
     );
   }
 
-  canSubmit() {
+  canSubmit(): boolean {
     return (this.targetDiscussionId().length && !this.newDiscussion()) || (this.newDiscussionTitle().length && this.newDiscussion());
   }
 
