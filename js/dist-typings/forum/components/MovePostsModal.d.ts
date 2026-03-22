@@ -23,7 +23,7 @@ export default class MovePostsModal extends FormModal<MovePostsModalAttrs> {
     className(): string;
     title(): string | any[];
     content(): JSX.Element;
-    canSubmit(): any;
+    canSubmit(): boolean;
     data(): Record<string, unknown>;
     emulate(): void;
     onsubmit(event: SubmitEvent | null, emulate?: boolean): Promise<MovePostsResponse | undefined>;
