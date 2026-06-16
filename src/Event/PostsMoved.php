@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Collection;
 
 class PostsMoved
 {
+    /**
+     * @param Collection<int, CommentPost> $posts
+     */
     public function __construct(
         public Collection $posts,
         public Discussion $targetDiscussion,

@@ -16,7 +16,7 @@ use Flarum\User\User;
 
 class GlobalPolicy extends AbstractPolicy
 {
-    public function movePosts(User $actor)
+    public function movePosts(User $actor): string|bool|null
     {
         return $actor->hasPermission('fof-move-posts:movePosts');
     }

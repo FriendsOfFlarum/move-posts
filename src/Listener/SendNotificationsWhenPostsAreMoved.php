@@ -14,14 +14,14 @@ class SendNotificationsWhenPostsAreMoved
     ) {
     }
 
-    public function handle(PostsMoved $event)
+    public function handle(PostsMoved $event): void
     {
         $actor = $event->actor;
         $posts = $event->posts
-            ->unique('user_id')
             ->filter(function (CommentPost $post) use ($actor) {
                 return $post->user_id !== $actor->id;
-            });
+            })
+            ->unique('user_id');
 
         $this->notifications->sync(
             new PostMovedBlueprint($event->targetDiscussion, $event->sourceDiscussion),

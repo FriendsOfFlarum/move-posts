@@ -29,7 +29,8 @@
         "flarum/tags": "*"
     },
     "require-dev": {
-        "flarum/testing": "^v2.0.0-beta.7"
+        "flarum/testing": "^2.0.0",
+        "flarum/phpstan": "^2.0.0"
     },
     "authors": [
         {
@@ -90,6 +91,8 @@
         }
     },
     "scripts": {
+        "analyse:phpstan": "phpstan analyse",
+        "clear-cache:phpstan": "phpstan clear-result-cache",
         "test": [
             "@test:unit",
             "@test:integration"
@@ -99,6 +102,7 @@
         "test:setup": "@php tests/integration/setup.php"
     },
     "scripts-descriptions": {
+        "analyse:phpstan": "Run static analysis",
         "test": "Runs all tests.",
         "test:unit": "Runs all unit tests.",
         "test:integration": "Runs all integration tests.",

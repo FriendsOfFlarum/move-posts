@@ -15,7 +15,7 @@ use s9e\TextFormatter\Utils;
 
 class UnparsePostMentions
 {
-    public function __invoke($context, ?string $xml): ?string
+    public function __invoke(mixed $context, ?string $xml): ?string
     {
         if (! $xml) {
             return null;
