@@ -292,7 +292,11 @@ class MovePostsHandler
             ->mergeBindings($selectCreatedAt)
             ->selectRaw('COUNT(created_at) as count')
             ->from($db->raw("({$selectCreatedAt->toSql()}) as sp"))
-            ->whereColumn('posts.created_at', '>=', 'sp.created_at');
+            // Compare with the derived-table alias `sp` as the first column so it can be
+            // passed as a raw expression (avoiding the table prefix being applied to the
+            // alias), while `posts.created_at` is wrapped normally. The operator is flipped
+            // accordingly: `posts.created_at >= sp.created_at` === `sp.created_at <= posts.created_at`.
+            ->whereColumn($db->raw('sp.created_at'), '<=', 'posts.created_at');
 
         // Create number gaps in discussion.
         match ($db->getDriverName()) {
