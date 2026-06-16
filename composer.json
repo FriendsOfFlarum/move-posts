@@ -22,7 +22,6 @@
         "sycho/flarum-move-posts": "*"
     },
     "require": {
-        "php": "^8.2",
         "flarum/core": "^2.0.0",
         "fof/ui-kit": "^2.0.0.beta.3",
         "flarum/lock": "*",
@@ -30,7 +29,8 @@
     },
     "require-dev": {
         "flarum/testing": "^2.0.0",
-        "flarum/phpstan": "^2.0.0"
+        "flarum/phpstan": "^2.0.0",
+        "flarum/audit": "2.x-dev"
     },
     "authors": [
         {
@@ -64,7 +64,8 @@
             "category": "feature",
             "optional-dependencies": [
                 "flarum/tags",
-                "flarum/lock"
+                "flarum/lock",
+                "flarum/audit"
             ],
             "icon": {
                 "name": "fas fa-exchange-alt",
