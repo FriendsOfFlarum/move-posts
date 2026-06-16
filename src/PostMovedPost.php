@@ -46,7 +46,7 @@ class PostMovedPost extends AbstractEventPost implements MergeableInterface
         return $this;
     }
 
-    public static function reply(int $discussionId, int $userId, Discussion $targetDiscussion, Post $movedPost, Post $oldPost, int $count = 1)
+    public static function reply(int $discussionId, int $userId, Discussion $targetDiscussion, Post $movedPost, Post $oldPost, int $count = 1): static
     {
         $post = new static;
 
@@ -60,7 +60,7 @@ class PostMovedPost extends AbstractEventPost implements MergeableInterface
         return $post;
     }
 
-    protected static function buildContent(int $targetDiscussionId, string $targetDiscussionTitle, int $count, int $number, int $originalPostId)
+    protected static function buildContent(int $targetDiscussionId, string $targetDiscussionTitle, int $count, int $number, int $originalPostId): array
     {
         return compact('targetDiscussionId', 'targetDiscussionTitle', 'count', 'number', 'originalPostId');
     }

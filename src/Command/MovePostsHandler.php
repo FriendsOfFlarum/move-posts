@@ -17,6 +17,7 @@ use Flarum\Lock\Event\DiscussionWasLocked;
 use Flarum\Post\CommentPost;
 use Flarum\Post\Post;
 use Flarum\Settings\SettingsRepositoryInterface;
+use Flarum\User\Guest;
 use Flarum\User\User;
 use FoF\MovePosts\Event\CreatedTargetDiscussion;
 use FoF\MovePosts\Event\PostsMoved;
@@ -91,7 +92,7 @@ class MovePostsHandler
 
         $sourceDiscussion = $this->discussions->findOrFail(Arr::get($data, 'sourceDiscussionId'));
 
-        /** @var EloquentCollection $posts */
+        /** @var EloquentCollection<int, CommentPost> $posts */
         $posts = CommentPost::query()
             ->whereVisibleTo($actor)
             ->whereIn('id', Arr::get($data, 'postIds'))
@@ -130,6 +131,7 @@ class MovePostsHandler
             $targetDiscussion->setFirstPost($posts->first());
         }
 
+        /** @var EloquentCollection<int, CommentPost> $oldPosts */
         $oldPosts = $posts->map(function (CommentPost $post) {
             return clone $post;
         });
@@ -213,6 +215,9 @@ class MovePostsHandler
 
     /**
      * Replaces old posts positions with new event posts to point to the new ones.
+     *
+     * @param EloquentCollection<int, CommentPost> $oldPosts
+     * @param EloquentCollection<int, CommentPost> $posts
      */
     protected function createEventPosts(EloquentCollection $oldPosts, EloquentCollection $posts, Discussion $sourceDiscussion, Discussion $targetDiscussion, User $actor): Collection
     {
@@ -244,6 +249,9 @@ class MovePostsHandler
     /**
      * Pushes the moved posts at the end of the target discussion.
      * Cleanest case scenario.
+     *
+     * @param EloquentCollection<int, CommentPost> $posts
+     * @return EloquentCollection<int, CommentPost>
      */
     protected function simpleMove(EloquentCollection $posts, Discussion $discussion): EloquentCollection
     {
@@ -265,6 +273,9 @@ class MovePostsHandler
     /**
      * Pushes moved posts in between target discussion posts, depending on creation date & time.
      * Results in breaking old URLs to the target discussion posts.
+     *
+     * @param EloquentCollection<int, CommentPost> $posts
+     * @return EloquentCollection<int, CommentPost>
      */
     protected function complexMove(EloquentCollection $posts, Discussion $discussion): EloquentCollection
     {
@@ -281,7 +292,7 @@ class MovePostsHandler
             ->mergeBindings($selectCreatedAt)
             ->selectRaw('COUNT(created_at) as count')
             ->from($db->raw("({$selectCreatedAt->toSql()}) as sp"))
-            ->whereColumn('posts.created_at', '>=', $db->raw('sp.created_at'));
+            ->whereColumn('posts.created_at', '>=', 'sp.created_at');
 
         // Create number gaps in discussion.
         match ($db->getDriverName()) {
@@ -339,6 +350,8 @@ class MovePostsHandler
 
     /**
      * Groups sequential event posts into one.
+     *
+     * @param EloquentCollection<int, CommentPost> $posts
      */
     protected function groupSequentialPosts(EloquentCollection $posts): Collection
     {

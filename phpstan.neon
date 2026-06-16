@@ -1,0 +1,16 @@
+includes:
+  - vendor/flarum/phpstan/extension.neon
+
+parameters:
+  level: 6
+  paths:
+    - extend.php
+    - src
+    - vendor/flarum/tags/extend.php
+    - vendor/flarum/lock/extend.php
+  excludePaths:
+    analyse:
+      - *.blade.php
+      - vendor/flarum/tags/extend.php
+      - vendor/flarum/lock/extend.php
+  databaseMigrationsPath: ['migrations']

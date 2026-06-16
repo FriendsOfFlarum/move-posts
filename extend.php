@@ -15,6 +15,7 @@ use Flarum\Extend;
 use Flarum\Api\Context;
 use Flarum\Api\Resource;
 use Flarum\Api\Schema;
+use Flarum\Discussion\Discussion;
 
 return [
     (new \FoF\UiKit\Extend\Register),
@@ -55,6 +56,9 @@ return [
         ->status('move_old_post_to_newer_discussion', 409)
         ->status('move_posts_from_different_discussions', 409)
         ->status('move_posts_to_same_discussion', 409),
+
+    (new Extend\Model(Discussion::class))
+        ->cast('is_first_moved', 'boolean'),
 
     (new Extend\Post)
         ->type(PostMovedPost::class),
