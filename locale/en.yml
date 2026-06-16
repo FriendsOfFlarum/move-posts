@@ -61,3 +61,12 @@ fof-move-posts:
       first_post:
         default_content: >
           *This post has been moved to **[%DISCUSSION_NAME%](%POST_LINK%)**.*
+
+# Audit log action labels, contributed to the flarum/audit namespace.
+# Rendered by flarum-audit at flarum-audit.lib.browser.<action>.
+flarum-audit:
+  lib:
+    browser:
+      posts:
+        moved: "{username} moved {count, plural, one {one post} other {{count} posts}} from {discussion} to {new_discussion}"
+        moved_to_new_discussion: "{username} moved posts from {discussion} into the new discussion {new_discussion}"

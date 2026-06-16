@@ -15,6 +15,7 @@ use Flarum\Extend;
 use Flarum\Api\Context;
 use Flarum\Api\Resource;
 use Flarum\Api\Schema;
+use Flarum\Audit\Extend\Audit;
 use Flarum\Discussion\Discussion;
 
 return [
@@ -69,4 +70,21 @@ return [
     (new Extend\Event)
         ->listen(Event\PostsMoved::class, Listener\SendNotificationsWhenPostsAreMoved::class)
         ->listen(Event\CreatedTargetDiscussion::class, Listener\CopyTagsWhenPostsAreMovedToNewDiscussion::class),
+
+    (new Extend\Conditional())
+        ->whenExtensionEnabled('flarum-audit', fn () => [
+            // The payload keys `discussion_id` and `new_discussion_id` are recognised by
+            // flarum/audit, which resolves them into linked discussions in the audit browser
+            // (rendered as the {discussion} and {new_discussion} translation parameters).
+            (new Audit())
+                ->listen(Event\PostsMoved::class, 'posts.moved', fn (Event\PostsMoved $e) => [
+                    'discussion_id' => $e->sourceDiscussion->id,
+                    'new_discussion_id' => $e->targetDiscussion->id,
+                    'count' => $e->posts->count(),
+                ])
+                ->listen(Event\CreatedTargetDiscussion::class, 'posts.moved_to_new_discussion', fn (Event\CreatedTargetDiscussion $e) => [
+                    'discussion_id' => $e->sourceDiscussion->id,
+                    'new_discussion_id' => $e->targetDiscussion->id,
+                ]),
+        ]),
 ];
