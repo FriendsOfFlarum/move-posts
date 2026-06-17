@@ -87,8 +87,10 @@ class AuditTest extends TestCase
         $this->assertEquals([
             'discussion_id' => 2,
             'new_discussion_id' => 1,
-            'count' => 4,
+            'post_count' => 4,
         ], $log->payload);
+
+        $this->assertEquals(0, AuditLog::query()->where('action', 'posts.moved_to_new_discussion')->count(), 'A move to an existing discussion should not log the new-discussion action');
     }
 
     #[Test]
@@ -110,18 +112,17 @@ class AuditTest extends TestCase
 
         $this->assertEquals(200, $response->getStatusCode(), $response->getBody()->getContents());
 
-        // A move to a new discussion records both the creation of the target and the move itself.
-        $createdLog = AuditLog::query()->where('action', 'posts.moved_to_new_discussion')->first();
+        // A move that creates its target is logged as a single `posts.moved_to_new_discussion`
+        // entry — not also as `posts.moved` — so one action produces one audit entry.
+        $log = AuditLog::query()->where('action', 'posts.moved_to_new_discussion')->first();
 
-        $this->assertNotNull($createdLog, 'Moving posts into a new discussion should be audit logged');
-        $this->assertEquals(1, $createdLog->actor_id, 'The acting user should be recorded');
-        $this->assertEquals(2, $createdLog->payload['discussion_id'], 'The source discussion should be recorded');
-        $this->assertArrayHasKey('new_discussion_id', $createdLog->payload, 'The created target discussion should be recorded');
+        $this->assertNotNull($log, 'Moving posts into a new discussion should be audit logged');
+        $this->assertEquals(1, $log->actor_id, 'The acting user should be recorded');
+        $this->assertEquals(2, $log->payload['discussion_id'], 'The source discussion should be recorded');
+        $this->assertArrayHasKey('new_discussion_id', $log->payload, 'The created target discussion should be recorded');
+        $this->assertEquals(4, $log->payload['post_count']);
 
-        $movedLog = AuditLog::query()->where('action', 'posts.moved')->first();
-
-        $this->assertNotNull($movedLog, 'The move itself should also be audit logged');
-        $this->assertEquals(4, $movedLog->payload['count']);
-        $this->assertEquals($createdLog->payload['new_discussion_id'], $movedLog->payload['new_discussion_id']);
+        $this->assertEquals(0, AuditLog::query()->where('action', 'posts.moved')->count(), 'A new-discussion move should not also log posts.moved');
+        $this->assertEquals(1, AuditLog::query()->count(), 'A new-discussion move should produce exactly one audit entry');
     }
 }

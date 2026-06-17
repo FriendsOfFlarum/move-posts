@@ -181,7 +181,7 @@ class MovePostsHandler
         $sourceDiscussion->save();
 
         $this->events->dispatch(
-            new PostsMoved($posts, $targetDiscussion, $sourceDiscussion, $actor)
+            new PostsMoved($posts, $targetDiscussion, $sourceDiscussion, $actor, (bool) $newDiscussion)
         );
 
         return [
