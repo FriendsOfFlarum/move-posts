@@ -73,18 +73,24 @@ return [
 
     (new Extend\Conditional())
         ->whenExtensionEnabled('flarum-audit', fn () => [
+            // A move always fires PostsMoved; the CreatedTargetDiscussion event is a sub-step of
+            // a new-discussion move, so auditing both would produce two entries for one action.
+            // Instead we audit PostsMoved alone and pick the action by whether the target was
+            // newly created, returning null from the other listener to skip it.
+            //
             // The payload keys `discussion_id` and `new_discussion_id` are recognised by
             // flarum/audit, which resolves them into linked discussions in the audit browser
             // (rendered as the {discussion} and {new_discussion} translation parameters).
             (new Audit())
-                ->listen(Event\PostsMoved::class, 'posts.moved', fn (Event\PostsMoved $e) => [
+                ->listen(Event\PostsMoved::class, 'posts.moved', fn (Event\PostsMoved $e) => $e->targetCreated ? null : [
                     'discussion_id' => $e->sourceDiscussion->id,
                     'new_discussion_id' => $e->targetDiscussion->id,
-                    'count' => $e->posts->count(),
+                    'post_count' => $e->posts->count(),
                 ])
-                ->listen(Event\CreatedTargetDiscussion::class, 'posts.moved_to_new_discussion', fn (Event\CreatedTargetDiscussion $e) => [
+                ->listen(Event\PostsMoved::class, 'posts.moved_to_new_discussion', fn (Event\PostsMoved $e) => $e->targetCreated ? [
                     'discussion_id' => $e->sourceDiscussion->id,
                     'new_discussion_id' => $e->targetDiscussion->id,
-                ]),
+                    'post_count' => $e->posts->count(),
+                ] : null),
         ]),
 ];

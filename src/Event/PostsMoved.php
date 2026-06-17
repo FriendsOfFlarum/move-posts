@@ -16,7 +16,8 @@ class PostsMoved
         public Collection $posts,
         public Discussion $targetDiscussion,
         public Discussion $sourceDiscussion,
-        public User $actor
+        public User $actor,
+        public bool $targetCreated = false
     ) {
     }
 }
