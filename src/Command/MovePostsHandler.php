@@ -157,7 +157,7 @@ class MovePostsHandler
         $movingFirstPostOnly = $movingFirstPost && ! $settingSecondAsFirst;
 
         if (! $movingFirstPostOnly) {
-            $eventPosts = $this->createEventPosts($oldPosts, $posts, $sourceDiscussion, $targetDiscussion, $actor);
+            $this->createEventPosts($oldPosts, $posts, $sourceDiscussion, $targetDiscussion, $actor);
         } else {
             $newFirstPost = $this->movedDiscussionFirstPostFactory->create($sourceDiscussion, $targetDiscussion, $oldPosts->first(), $posts->first());
             $sourceDiscussion->setFirstPost($newFirstPost);
@@ -219,31 +219,28 @@ class MovePostsHandler
      * @param EloquentCollection<int, CommentPost> $oldPosts
      * @param EloquentCollection<int, CommentPost> $posts
      */
-    protected function createEventPosts(EloquentCollection $oldPosts, EloquentCollection $posts, Discussion $sourceDiscussion, Discussion $targetDiscussion, User $actor): Collection
+    protected function createEventPosts(EloquentCollection $oldPosts, EloquentCollection $posts, Discussion $sourceDiscussion, Discussion $targetDiscussion, User $actor): void
     {
-        $eventPosts = new Collection();
-
         $grouped = $this->groupSequentialPosts($posts);
 
-        foreach ($grouped as $group) {
-            $post = $group->first();
+        // Event posts are written in one insert rather than saved one by one. They used to be
+        // saved quietly (no model events) with an explicit number, so a raw insert is equivalent.
+        $rows = $grouped->map(function (Collection $group) use ($oldPosts, $sourceDiscussion, $targetDiscussion, $actor) {
             $oldPost = $oldPosts->firstWhere('id', $group->last()->id);
 
-            $eventPost = PostMovedPost::reply(
+            return PostMovedPost::reply(
                 $sourceDiscussion->id,
                 $actor->id,
                 $targetDiscussion,
-                $post,
+                $group->first(),
                 $oldPost,
                 $group->count(),
-            );
+            )->getAttributes();
+        });
 
-            $eventPosts->push($eventPost);
-
-            $eventPost->saveQuietly();
+        if ($rows->isNotEmpty()) {
+            PostMovedPost::query()->insert($rows->all());
         }
-
-        return $eventPosts;
     }
 
     /**
@@ -300,7 +297,7 @@ class MovePostsHandler
 
         // Create number gaps in discussion.
         match ($db->getDriverName()) {
-            'sqlite', 'pgsql' => $this->createNumberGapsOneByOne($discussion, $selectCount),
+            'sqlite', 'pgsql' => $this->createNumberGapsViaNegatives($discussion, $selectCount),
             default => $this->createNumberGaps($discussion, $selectCount),
         };
 
@@ -330,18 +327,32 @@ class MovePostsHandler
 
         $merged = $checkpointPosts->merge($posts)->sortBy('created_at')->values();
 
-        $merged->map(function (Post $post, int $key) use ($merged, $checkpointPosts, $discussion) {
+        $newNumbers = [];
+
+        foreach ($merged as $key => $post) {
             $prev = $merged[$key-1] ?? null;
 
             if ($prev && ! $checkpointPosts->firstWhere('id', $post->id)) {
                 $post->number = $prev->number + 1;
-                $post->discussion_id = $discussion->id;
-
-                $post->save();
+                $newNumbers[$post->id] = $post->number;
             }
+        }
 
-            return $post;
-        });
+        // Move all posts into their gaps with one statement instead of saving each one.
+        if ($newNumbers) {
+            $cases = implode(' ', array_map(
+                fn (int $id, int $number) => "WHEN $id THEN $number",
+                array_keys($newNumbers),
+                $newNumbers
+            ));
+
+            $db->table('posts')
+                ->whereIn('id', array_keys($newNumbers))
+                ->update([
+                    'discussion_id' => $discussion->id,
+                    'number' => $db->raw("CASE {$db->getQueryGrammar()->wrap('id')} $cases END"),
+                ]);
+        }
 
         $discussion->refreshCommentCount();
         $discussion->refreshParticipantCount();
@@ -400,23 +411,24 @@ class MovePostsHandler
     }
 
     /**
-     * SQLite/PgSQL doesn't support update order by.
-     * So it'll have to be slower...
+     * SQLite/PgSQL doesn't support update order by, and check the unique (discussion_id, number)
+     * index row by row, so shifting numbers up in place would collide with the next post.
+     * Instead, shift them into negative numbers (which can't collide with existing ones),
+     * then flip them back, keeping it to two statements regardless of discussion size.
      */
-    private function createNumberGapsOneByOne(Discussion $discussion, QueryBuilder $selectCount): void
+    private function createNumberGapsViaNegatives(Discussion $discussion, QueryBuilder $selectCount): void
     {
         /** @var Connection $db */
         $db = $this->db->connection();
 
         $db->table('posts')
-            ->select('id', 'number')
-            ->selectSub($selectCount, 'count')
+            ->mergeBindings($selectCount)
             ->where('discussion_id', $discussion->id)
-            ->orderBy('number', 'desc')
-            ->each(function ($post) use ($db) {
-                $db->table('posts')
-                    ->where('id', $post->id)
-                    ->update(['number' => $db->raw("number + $post->count")]);
-            });
+            ->update(['number' => $db->raw("-(number + ({$selectCount->toSql()}))")]);
+
+        $db->table('posts')
+            ->where('discussion_id', $discussion->id)
+            ->where('number', '<', 0)
+            ->update(['number' => $db->raw('-number')]);
     }
 }
