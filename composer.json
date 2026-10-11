@@ -23,14 +23,14 @@
     },
     "require": {
         "flarum/core": "^2.0.0",
-        "fof/ui-kit": "^2.0.0.beta.3",
+        "fof/ui-kit": "^2.0.0",
         "flarum/lock": "*",
         "flarum/tags": "*"
     },
     "require-dev": {
         "flarum/testing": "^2.0.0",
         "flarum/phpstan": "^2.0.0",
-        "flarum/audit": "2.x-dev"
+        "flarum/audit": "^2.0.0"
     },
     "authors": [
         {
